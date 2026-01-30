@@ -26,7 +26,33 @@
   backdrop-filter: blur(16px);
   color: var(--ios-label);
   display: grid;
-  align-content: center;
+  align-content: start;
+  gap: 16px;
+  padding-top: calc(64px + env(safe-area-inset-top));
+}
+
+.preloader__header {
+  margin-bottom: 6px;
+}
+
+.preloader__logo-bubble {
+  background: rgba(0, 122, 255, 0.08);
+  border: 1px solid rgba(0, 122, 255, 0.18);
+}
+
+.preloader__status-row {
+  margin-top: 2px;
+}
+
+.preloader__bar {
+  height: 14px;
+  background: rgba(0, 122, 255, 0.08);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+}
+
+.preloader__bar-fill {
+  background: linear-gradient(90deg, #3ea0ff 0%, #007aff 100%);
+  box-shadow: 0 0 14px rgba(0, 122, 255, 0.28);
 }
 
 .preloader__header {
