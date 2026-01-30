@@ -1,7 +1,26 @@
 .app {
-  min-height: 100vh;
-  background: #0b1220;
+  min-height: 100dvh;
+  background: var(--ios-bg);
   display: grid;
-  place-items: center;
-  padding: 18px;
+  align-content: start;
+  justify-items: center;
+  padding: calc(16px + env(safe-area-inset-top))
+    calc(16px + env(safe-area-inset-right))
+    calc(20px + env(safe-area-inset-bottom))
+    calc(16px + env(safe-area-inset-left));
+  gap: 16px;
+}
+
+.app__content {
+  width: min(520px, 100%);
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+
+.app__stack {
+  width: 100%;
+  display: grid;
+  gap: 16px;
+  justify-items: center;
 }

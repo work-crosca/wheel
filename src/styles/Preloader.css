@@ -1,22 +1,25 @@
 .preloader {
   position: fixed;
   inset: 0;
-  background: radial-gradient(1200px 800px at 50% 30%, #111827, #05070f);
+  background: radial-gradient(1200px 800px at 50% 30%, #ffffff, #e7e7ef);
   display: grid;
   place-items: center;
   z-index: 9999;
-  padding: 18px;
+  padding: calc(18px + env(safe-area-inset-top))
+    calc(18px + env(safe-area-inset-right))
+    calc(18px + env(safe-area-inset-bottom))
+    calc(18px + env(safe-area-inset-left));
 }
 
 .preloader__card {
   width: min(520px, 100%);
-  border-radius: 20px;
+  border-radius: 22px;
   padding: 18px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(10px);
-  color: white;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--ios-border);
+  box-shadow: var(--ios-shadow);
+  backdrop-filter: blur(16px);
+  color: var(--ios-label);
 }
 
 .preloader__header {
@@ -30,8 +33,8 @@
   width: 44px;
   height: 44px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--ios-border);
   display: grid;
   place-items: center;
 }
@@ -40,8 +43,8 @@
   width: 12px;
   height: 12px;
   border-radius: 999px;
-  background: white;
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.1);
+  background: var(--ios-blue);
+  box-shadow: 0 0 0 6px rgba(0, 122, 255, 0.12);
 }
 
 .preloader__title {
@@ -51,7 +54,7 @@
 }
 
 .preloader__subtitle {
-  opacity: 0.75;
+  opacity: 0.7;
   font-size: 13px;
   margin-top: 3px;
 }
@@ -66,7 +69,7 @@
 
 .preloader__status-text {
   font-size: 13px;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .preloader__percent {
@@ -78,8 +81,8 @@
 .preloader__bar {
   height: 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--ios-border);
   overflow: hidden;
 }
 
@@ -87,7 +90,7 @@
   height: 100%;
   width: var(--progress);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--ios-blue);
   transition: width 120ms linear;
 }
 
@@ -102,7 +105,7 @@
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: white;
+  background: var(--ios-blue);
   opacity: 0.35;
   transform: scale(1);
   transition: all 180ms ease;

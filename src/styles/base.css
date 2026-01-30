@@ -1,17 +1,49 @@
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+:root {
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  background-color: #f2f2f7;
+  color: #0f172a;
+
+  --ios-bg: #f2f2f7;
+  --ios-card: #ffffff;
+  --ios-border: rgba(60, 60, 67, 0.12);
+  --ios-label: #0f172a;
+  --ios-secondary: rgba(60, 60, 67, 0.6);
+  --ios-blue: #007aff;
+  --ios-red: #ff3b30;
+  --ios-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+html,
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: #0b1220;
-  color: white;
+  height: 100%;
+  background: var(--ios-bg);
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
 }
 
-button {
+body {
+  color: var(--ios-label);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+button,
+input,
+textarea {
   font-family: inherit;
 }
-
-html, body { margin: 0; height: 100%; background: #0b1220; overscroll-behavior: none; }
-body { overflow: hidden; -webkit-tap-highlight-color: transparent; }

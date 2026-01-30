@@ -151,7 +151,7 @@ export default function PrizeWheel({
     { label: "100 coins", value: 100, color: "#A855F7" },
     { label: "Mystery", value: "mystery", color: "#06B6D4" },
   ],
-  size = 360,
+  size = null,
   minTurns = 4,
   maxTurns = 7,
   durationMs = 4500,
@@ -172,6 +172,7 @@ export default function PrizeWheel({
 
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotationDeg, setRotationDeg] = useState(0);
+  const [wheelSize, setWheelSize] = useState(320);
 
   const n = prizes.length;
 
@@ -184,11 +185,31 @@ export default function PrizeWheel({
   }, []);
 
   useEffect(() => {
+    const updateSize = () => {
+      if (size) {
+        setWheelSize(size);
+        return;
+      }
+
+      const padding = 48;
+      const max = 380;
+      const min = 240;
+      const available = Math.min(window.innerWidth, 520) - padding;
+      setWheelSize(clamp(Math.floor(available), min, max));
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, [size]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    drawWheel(ctx, prizes, size);
-  }, [prizes, size]);
+    const renderSize = Math.max(wheelSize - 20, 0);
+    drawWheel(ctx, prizes, renderSize);
+  }, [prizes, wheelSize]);
 
   useEffect(() => {
     return () => {
@@ -295,12 +316,19 @@ export default function PrizeWheel({
   return (
     <div
       className="prize-wheel"
-      style={{ "--wheel-size": `${size}px`, "--rotation": `${rotationDeg}deg` }}
+      style={{
+        "--wheel-size": `${wheelSize}px`,
+        "--rotation": `${rotationDeg}deg`,
+      }}
     >
       <div className="prize-wheel__stage">
         <div className="prize-wheel__pointer" />
         <div className="prize-wheel__wheel">
-          <canvas ref={canvasRef} width={size} height={size} />
+          <canvas
+            ref={canvasRef}
+            width={Math.max(wheelSize - 20, 0)}
+            height={Math.max(wheelSize - 20, 0)}
+          />
         </div>
       </div>
 

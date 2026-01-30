@@ -76,14 +76,10 @@ export default function App() {
 
   return (
     <div className="app">
-      <div
-        style={{
-          minHeight: "100dvh"
-        }}
-      >
+      <div className="app__content">
         <ProfileBar />
 
-        <div style={{ display: "grid", gap: 16, justifyItems: "center" }}>
+        <div className="app__stack">
           <PrizeWheel
             prizes={prizes}
             onWin={({ prize }) => {

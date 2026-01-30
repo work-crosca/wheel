@@ -6,13 +6,13 @@
   justify-content: space-between;
 
   padding: 10px 12px;
-  border-radius: 16px;
-  margin: 24px 0px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--ios-border);
+  backdrop-filter: blur(18px);
 
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--ios-shadow);
 }
 
 .profile-bar__left {
@@ -27,8 +27,8 @@
   border-radius: 999px;
   overflow: hidden;
 
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--ios-border);
 
   display: grid;
   place-items: center;
@@ -42,9 +42,8 @@
 }
 
 .profile-bar__avatar span {
-  color: #fff;
-  font-weight: 800;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto;
+  color: var(--ios-label);
+  font-weight: 700;
   font-size: 13px;
 }
 
@@ -54,17 +53,15 @@
 }
 
 .profile-bar__name {
-  color: #fff;
-  font-weight: 800;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto;
+  color: var(--ios-label);
+  font-weight: 700;
   font-size: 14px;
   line-height: 1.1;
 }
 
 .profile-bar__username {
-  color: rgba(255, 255, 255, 0.70);
+  color: var(--ios-secondary);
   font-weight: 600;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto;
   font-size: 12px;
   line-height: 1.1;
 }
@@ -72,11 +69,10 @@
 .profile-bar__badge {
   padding: 6px 10px;
   border-radius: 999px;
-  font-weight: 900;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto;
+  font-weight: 700;
   font-size: 12px;
-  color: #fff;
+  color: var(--ios-blue);
 
-  background: rgba(0, 0, 0, 0.30);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 122, 255, 0.12);
+  border: 1px solid rgba(0, 122, 255, 0.2);
 }
