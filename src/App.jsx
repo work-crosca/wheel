@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from "react";
+// src/App.jsx
+import React, { useEffect, useMemo, useState } from "react";
 import PrizeWheel from "./PrizeWheel";
 import Preloader from "./components/Preloader";
 import WinModal from "./components/WinModal";
 import { preloadAll } from "./utils/preloadAssets";
+import { initTelegramMiniApp, getTg, isTelegramMiniApp } from "./telegram";
 import "./styles/App.css";
 
 export default function App() {
@@ -22,9 +24,9 @@ export default function App() {
   );
 
   // Pune aici resursele reale când le ai (din /public).
-  // Exemplu:
-  //  - public/img/bg.jpg  => "/img/bg.jpg"
-  //  - public/sounds/tick.wav => "/sounds/tick.wav"
+  // Ex:
+  //  - public/img/bg.jpg        => "/img/bg.jpg"
+  //  - public/sounds/tick.wav   => "/sounds/tick.wav"
   const assets = useMemo(
     () => ({
       images: [
@@ -36,6 +38,50 @@ export default function App() {
     }),
     []
   );
+
+  // ✅ Telegram Mini App init (safe în browser normal)
+  useEffect(() => {
+    if (!isTelegramMiniApp()) return;
+
+    const tg = initTelegramMiniApp();
+
+    // aplicăm theme Telegram în UI (fallback pe culoarea ta)
+    const bg = tg.themeParams?.bg_color || "#0b1220";
+    document.body.style.background = bg;
+
+    // BackButton: închide modalul sau mini app
+    tg.BackButton.show();
+
+    const handleBack = () => {
+      if (winPrize) setWinPrize(null);
+      else tg.close();
+    };
+
+    tg.BackButton.onClick(handleBack);
+
+    // când se schimbă tema (dark/light) în Telegram
+    const handleTheme = () => {
+      const nextBg = tg.themeParams?.bg_color || "#0b1220";
+      document.body.style.background = nextBg;
+    };
+
+    tg.onEvent("themeChanged", handleTheme);
+
+    return () => {
+      tg.BackButton.offClick(handleBack);
+      tg.offEvent("themeChanged", handleTheme);
+    };
+  }, [winPrize]);
+
+  // ✅ când se deschide modalul, arătăm/ascundem BackButton (opțional)
+  useEffect(() => {
+    if (!isTelegramMiniApp()) return;
+    const tg = getTg();
+    if (!tg) return;
+
+    if (winPrize) tg.BackButton.show();
+    else tg.BackButton.show();
+  }, [winPrize]);
 
   if (!ready) {
     return (
@@ -59,14 +105,37 @@ export default function App() {
           onWin={({ index, prize }) => {
             console.log("WIN:", index, prize);
 
-            // dacă nu vrei confetti la "Try again", filtrează aici:
+            // dacă nu vrei confetti la "Try again"
+            if (prize?.value === 0) {
+              try {
+                const tg = getTg();
+                tg?.HapticFeedback?.notificationOccurred?.("warning");
+              } catch {}
+              return;
+            }
+
             setWinPrize(prize);
+
+            // haptic success (Telegram feel)
+            try {
+              const tg = getTg();
+              tg?.HapticFeedback?.notificationOccurred?.("success");
+            } catch {}
 
             // aici: call la backend, update balance, etc.
           }}
         />
 
-        <WinModal prize={winPrize} onClose={() => setWinPrize(null)} />
+        <WinModal
+          prize={winPrize}
+          onClose={() => {
+            setWinPrize(null);
+            try {
+              const tg = getTg();
+              tg?.HapticFeedback?.impactOccurred?.("light");
+            } catch {}
+          }}
+        />
       </div>
     </div>
   );

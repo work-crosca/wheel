@@ -9,7 +9,6 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-// Deseneaza roata pe canvas (segmente + text)
 function drawWheel(ctx, prizes, size) {
   const r = size / 2;
   ctx.clearRect(0, 0, size, size);
@@ -20,7 +19,6 @@ function drawWheel(ctx, prizes, size) {
   const n = prizes.length;
   const slice = (Math.PI * 2) / n;
 
-  // fundal
   ctx.beginPath();
   ctx.arc(cx, cy, r - 2, 0, Math.PI * 2);
   ctx.fillStyle = "#111827";
@@ -33,7 +31,6 @@ function drawWheel(ctx, prizes, size) {
     const start = i * slice;
     const end = start + slice;
 
-    // segment
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.arc(0, 0, r - 10, start, end);
@@ -41,12 +38,10 @@ function drawWheel(ctx, prizes, size) {
     ctx.fillStyle = prizes[i].color || (i % 2 ? "#7C3AED" : "#22C55E");
     ctx.fill();
 
-    // border
     ctx.strokeStyle = "rgba(255,255,255,0.15)";
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // text
     const label = prizes[i].label ?? String(prizes[i]);
     const mid = start + slice / 2;
 
@@ -64,13 +59,11 @@ function drawWheel(ctx, prizes, size) {
 
   ctx.restore();
 
-  // cerc interior
   ctx.beginPath();
   ctx.arc(cx, cy, 42, 0, Math.PI * 2);
   ctx.fillStyle = "rgba(0,0,0,0.35)";
   ctx.fill();
 
-  // "buton" vizual
   ctx.beginPath();
   ctx.arc(cx, cy, 34, 0, Math.PI * 2);
   ctx.fillStyle = "#111827";
@@ -83,7 +76,6 @@ function drawWheel(ctx, prizes, size) {
   ctx.fillText("SPIN", cx, cy);
 }
 
-// indice castigator pentru un unghi final (pointer sus, la -90deg)
 function getWinnerIndex(finalDeg, count) {
   const norm = ((finalDeg % 360) + 360) % 360;
   const pointerSpaceDeg = (360 - ((norm + 90) % 360)) % 360;
@@ -92,7 +84,6 @@ function getWinnerIndex(finalDeg, count) {
   return clamp(idx, 0, count - 1);
 }
 
-/** Tick engine (WebAudio) */
 function createTickEngine() {
   let ctx = null;
 
@@ -106,18 +97,13 @@ function createTickEngine() {
     if (c.state !== "running") await c.resume();
   };
 
-  // "clack" mecanic: burst scurt de noise + filtru
   const tick = (intensity = 1) => {
     const c = ensure();
     const now = c.currentTime;
 
     const duration = 0.02;
     const sampleRate = c.sampleRate;
-    const buffer = c.createBuffer(
-      1,
-      Math.floor(sampleRate * duration),
-      sampleRate
-    );
+    const buffer = c.createBuffer(1, Math.floor(sampleRate * duration), sampleRate);
     const data = buffer.getChannelData(0);
 
     for (let i = 0; i < data.length; i++) {
@@ -172,21 +158,23 @@ export default function PrizeWheel({
   onWin,
   forcedWinnerIndex = null,
   soundEnabled = true,
+  hapticsEnabled = true, // ✅ nou
 }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
 
-  // AUDIO
   const audioRef = useRef(null);
   const lastTickStepRef = useRef(null);
   const lastTickTimeRef = useRef(0);
+
+  // ✅ throttling separat pt haptic (mai rar ca tick-ul audio)
+  const lastHapticMsRef = useRef(0);
 
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotationDeg, setRotationDeg] = useState(0);
 
   const n = prizes.length;
 
-  // init audio
   useEffect(() => {
     audioRef.current = createTickEngine();
     return () => {
@@ -195,7 +183,6 @@ export default function PrizeWheel({
     };
   }, []);
 
-  // desenare roata: schimbat din useMemo in useEffect (side-effect corect)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -203,7 +190,6 @@ export default function PrizeWheel({
     drawWheel(ctx, prizes, size);
   }, [prizes, size]);
 
-  // cleanup RAF
   useEffect(() => {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -213,14 +199,12 @@ export default function PrizeWheel({
   const spin = async () => {
     if (isSpinning || n < 2) return;
 
-    // resume audio in click handler
     if (soundEnabled) {
       try {
         await audioRef.current?.resume?.();
       } catch {}
     }
 
-    // anulam orice RAF vechi
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
     setIsSpinning(true);
@@ -228,41 +212,36 @@ export default function PrizeWheel({
     const start = performance.now();
     const startRot = rotationDeg;
 
-    // decidem castigatorul (daca e forced, il respectam)
     const winnerIndex =
       forcedWinnerIndex !== null
         ? clamp(forcedWinnerIndex, 0, n - 1)
         : Math.floor(Math.random() * n);
 
     const slice = 360 / n;
-
     const centerOfWinnerDeg = winnerIndex * slice + slice / 2;
     const targetAngleDeg = 270 - centerOfWinnerDeg;
 
     const turns =
       Math.floor(minTurns + Math.random() * (maxTurns - minTurns + 1)) * 360;
 
-    // daca e forcedWinnerIndex, scoatem jitter ca sa fie 100% deterministic
     const jitter =
       forcedWinnerIndex !== null ? 0 : (Math.random() - 0.5) * (slice * 0.6);
 
     const finalRot =
       startRot + turns + (targetAngleDeg - (startRot % 360)) + jitter;
 
-    // tick tracking
     lastTickStepRef.current = Math.floor(startRot / slice);
     lastTickTimeRef.current = performance.now();
+    lastHapticMsRef.current = performance.now();
 
     const tickFrame = (now) => {
       const t = clamp((now - start) / durationMs, 0, 1);
       const eased = easeOutCubic(t);
       const cur = startRot + (finalRot - startRot) * eased;
 
-      // ticks
       if (soundEnabled && audioRef.current) {
         const step = Math.floor(cur / slice);
         const lastStep = lastTickStepRef.current ?? step;
-
         const diff = step - lastStep;
 
         if (diff !== 0) {
@@ -274,6 +253,18 @@ export default function PrizeWheel({
             const intensity = 0.65 + (1 - t) * 0.75;
 
             for (let k = 0; k < capped; k++) audioRef.current.tick(intensity);
+
+            // ✅ haptic mai rar (ex: 90ms)
+            if (hapticsEnabled) {
+              const hapticGap = 90;
+              if (nowMs - lastHapticMsRef.current >= hapticGap) {
+                try {
+                  const tg = window.Telegram?.WebApp;
+                  tg?.HapticFeedback?.impactOccurred?.("light");
+                } catch {}
+                lastHapticMsRef.current = nowMs;
+              }
+            }
 
             lastTickTimeRef.current = nowMs;
           }
@@ -290,6 +281,7 @@ export default function PrizeWheel({
         const idx = getWinnerIndex(cur, n);
         const prize = prizes[idx];
 
+        setRotationDeg(cur);
         setIsSpinning(false);
         onWin?.({ index: idx, prize });
 
