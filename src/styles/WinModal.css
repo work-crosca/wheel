@@ -10,11 +10,15 @@
     calc(18px + env(safe-area-inset-right))
     calc(18px + env(safe-area-inset-bottom))
     calc(18px + env(safe-area-inset-left));
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(2px);
 }
 
 .win-modal__card {
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(244, 247, 255, 0.88) 100%
+  );
   border-radius: 22px;
   padding: 22px 22px 26px;
   width: min(520px, 100%);
@@ -23,7 +27,7 @@
   box-shadow: var(--ios-shadow);
   color: var(--ios-label);
   border: 1px solid var(--ios-border);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
   position: relative;
   animation: sheet-in 220ms ease-out;
 }

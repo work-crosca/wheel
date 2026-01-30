@@ -132,6 +132,33 @@ function createTickEngine() {
     src.stop(now + duration);
   };
 
+  const playTone = (freq, duration, volume = 0.12) => {
+    const c = ensure();
+    const now = c.currentTime;
+
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    osc.connect(gain);
+    gain.connect(c.destination);
+
+    osc.start(now);
+    osc.stop(now + duration);
+  };
+
+  const playStart = () => {
+    playTone(520, 0.08, 0.08);
+  };
+
+  const playWin = () => {
+    playTone(660, 0.1, 0.1);
+    setTimeout(() => playTone(880, 0.12, 0.1), 90);
+  };
+
   const dispose = async () => {
     if (ctx) {
       await ctx.close();
@@ -139,7 +166,7 @@ function createTickEngine() {
     }
   };
 
-  return { resume, tick, dispose };
+  return { resume, tick, playStart, playWin, dispose };
 }
 
 export default function PrizeWheel({
@@ -159,6 +186,7 @@ export default function PrizeWheel({
   forcedWinnerIndex = null,
   soundEnabled = true,
   hapticsEnabled = true, // ✅ nou
+  fxSoundsEnabled = true,
 }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
@@ -223,6 +251,7 @@ export default function PrizeWheel({
     if (soundEnabled) {
       try {
         await audioRef.current?.resume?.();
+        if (fxSoundsEnabled) audioRef.current?.playStart?.();
       } catch {}
     }
 
@@ -304,6 +333,11 @@ export default function PrizeWheel({
 
         setRotationDeg(cur);
         setIsSpinning(false);
+        if (soundEnabled && fxSoundsEnabled) {
+          try {
+            audioRef.current?.playWin?.();
+          } catch {}
+        }
         onWin?.({ index: idx, prize });
 
         rafRef.current = null;
