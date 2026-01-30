@@ -3,6 +3,7 @@ import PrizeWheel from "./PrizeWheel";
 import Preloader from "./components/Preloader";
 import WinModal from "./components/WinModal";
 import { preloadAll } from "./utils/preloadAssets";
+import "./styles/App.css";
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -51,15 +52,7 @@ export default function App() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0b1220",
-        display: "grid",
-        placeItems: "center",
-        padding: 18,
-      }}
-    >
+    <div className="app">
       <PrizeWheel
         prizes={prizes}
         onWin={({ index, prize }) => {

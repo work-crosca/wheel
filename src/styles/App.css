@@ -1,0 +1,7 @@
+.app {
+  min-height: 100vh;
+  background: #0b1220;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}

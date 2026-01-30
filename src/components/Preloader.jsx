@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect, useMemo, useState } from "react";
+import "../styles/Preloader.css";
 
 const defaultSteps = [
   { key: "ui", label: "Pregătim interfața…" },
@@ -91,36 +92,34 @@ export default function Preloader({
   if (done) return null;
 
   return (
-    <div style={styles.backdrop}>
-      <div style={styles.card}>
-        <div style={styles.header}>
-          <div style={styles.logoBubble}>
-            <div style={styles.logoDot} />
+    <div className="preloader" style={{ "--progress": `${progress}%` }}>
+      <div className="preloader__card">
+        <div className="preloader__header">
+          <div className="preloader__logo-bubble">
+            <div className="preloader__logo-dot" />
           </div>
           <div>
-            <div style={styles.title}>{title}</div>
-            <div style={styles.subtitle}>{subtitle}</div>
+            <div className="preloader__title">{title}</div>
+            <div className="preloader__subtitle">{subtitle}</div>
           </div>
         </div>
 
-        <div style={styles.statusRow}>
-          <div style={styles.statusText}>{activeLabel}</div>
-          <div style={styles.percent}>{Math.round(progress)}%</div>
+        <div className="preloader__status-row">
+          <div className="preloader__status-text">{activeLabel}</div>
+          <div className="preloader__percent">{Math.round(progress)}%</div>
         </div>
 
-        <div style={styles.barWrap}>
-          <div style={{ ...styles.barFill, width: `${progress}%` }} />
+        <div className="preloader__bar">
+          <div className="preloader__bar-fill" />
         </div>
 
-        <div style={styles.dotsRow}>
+        <div className="preloader__dots">
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              style={{
-                ...styles.dot,
-                opacity: i === activeStep ? 1 : 0.35,
-                transform: i === activeStep ? "scale(1.2)" : "scale(1)",
-              }}
+              className={`preloader__dot${
+                i === activeStep ? " is-active" : ""
+              }`}
             />
           ))}
         </div>
@@ -128,85 +127,3 @@ export default function Preloader({
     </div>
   );
 }
-
-const styles = {
-  backdrop: {
-    position: "fixed",
-    inset: 0,
-    background: "radial-gradient(1200px 800px at 50% 30%, #111827, #05070f)",
-    display: "grid",
-    placeItems: "center",
-    zIndex: 9999,
-    padding: 18,
-  },
-  card: {
-    width: "min(520px, 100%)",
-    borderRadius: 20,
-    padding: 18,
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    boxShadow: "0 30px 100px rgba(0,0,0,0.45)",
-    backdropFilter: "blur(10px)",
-    color: "white",
-    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto",
-  },
-  header: {
-    display: "flex",
-    gap: 14,
-    alignItems: "center",
-    marginBottom: 14,
-  },
-  logoBubble: {
-    width: 44,
-    height: 44,
-    borderRadius: 16,
-    background: "rgba(255,255,255,0.10)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    display: "grid",
-    placeItems: "center",
-  },
-  logoDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 999,
-    background: "white",
-    boxShadow: "0 0 0 6px rgba(255,255,255,0.10)",
-  },
-  title: { fontWeight: 900, fontSize: 16, lineHeight: 1.1 },
-  subtitle: { opacity: 0.75, fontSize: 13, marginTop: 3 },
-  statusRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 6,
-    marginBottom: 10,
-  },
-  statusText: { fontSize: 13, opacity: 0.9 },
-  percent: { fontSize: 13, opacity: 0.85, fontWeight: 800 },
-  barWrap: {
-    height: 12,
-    borderRadius: 999,
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.10)",
-    overflow: "hidden",
-  },
-  barFill: {
-    height: "100%",
-    borderRadius: 999,
-    background: "rgba(255,255,255,0.95)",
-    transition: "width 120ms linear",
-  },
-  dotsRow: {
-    display: "flex",
-    gap: 8,
-    marginTop: 12,
-    justifyContent: "center",
-  },
-  dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 999,
-    background: "white",
-    transition: "all 180ms ease",
-  },
-};

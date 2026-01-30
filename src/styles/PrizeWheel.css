@@ -1,0 +1,52 @@
+.prize-wheel {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+}
+
+.prize-wheel__stage {
+  width: var(--wheel-size);
+  height: var(--wheel-size);
+  position: relative;
+  user-select: none;
+}
+
+.prize-wheel__wheel {
+  width: var(--wheel-size);
+  height: var(--wheel-size);
+  border-radius: 50%;
+  overflow: hidden;
+  transform: rotate(var(--rotation));
+  transition: transform 0ms;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.prize-wheel__pointer {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 1px solid transparent;
+  border-top: 8px solid #ffffff;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
+.prize-wheel__button {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #111827;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  width: 160px;
+}
+
+.prize-wheel__button.is-spinning {
+  background: #374151;
+  cursor: not-allowed;
+}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import "./styles/PrizeWheel.css";
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
@@ -299,42 +300,14 @@ export default function PrizeWheel({
     rafRef.current = requestAnimationFrame(tickFrame);
   };
 
-  const wrapperStyle = {
-    width: size,
-    height: size,
-    position: "relative",
-    userSelect: "none",
-  };
-
-  const wheelStyle = {
-    width: size,
-    height: size,
-    borderRadius: "50%",
-    overflow: "hidden",
-    transform: `rotate(${rotationDeg}deg)`,
-    transition: "transform 0ms",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-  };
-
-  const pointerStyle = {
-    position: "absolute",
-    top: -6,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: 0,
-    height: 0,
-    borderLeft: "8px solid transparent",
-    borderRight: "8px solid transparent",
-    borderBottom: "1px solid transparent",
-    borderTop: "8px solid #FFFFFF",
-    filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.35))",
-  };
-
   return (
-    <div style={{ display: "grid", gap: 14, justifyItems: "center" }}>
-      <div style={wrapperStyle}>
-        <div style={pointerStyle} />
-        <div style={wheelStyle}>
+    <div
+      className="prize-wheel"
+      style={{ "--wheel-size": `${size}px`, "--rotation": `${rotationDeg}deg` }}
+    >
+      <div className="prize-wheel__stage">
+        <div className="prize-wheel__pointer" />
+        <div className="prize-wheel__wheel">
           <canvas ref={canvasRef} width={size} height={size} />
         </div>
       </div>
@@ -342,16 +315,7 @@ export default function PrizeWheel({
       <button
         onClick={spin}
         disabled={isSpinning}
-        style={{
-          padding: "10px 16px",
-          borderRadius: 12,
-          border: "1px solid rgba(255,255,255,0.15)",
-          background: isSpinning ? "#374151" : "#111827",
-          color: "white",
-          fontWeight: 800,
-          cursor: isSpinning ? "not-allowed" : "pointer",
-          width: 160,
-        }}
+        className={`prize-wheel__button${isSpinning ? " is-spinning" : ""}`}
       >
         {isSpinning ? "Spinning..." : "Spin"}
       </button>
