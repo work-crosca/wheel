@@ -27,5 +27,16 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/work-crosca/wheel.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/work-crosca/wheel/issues"
+  },
+  "homepage": "https://github.com/work-crosca/wheel#readme"
 }
