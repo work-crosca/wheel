@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
@@ -91,10 +91,7 @@ function getWinnerIndex(finalDeg, count) {
   return clamp(idx, 0, count - 1);
 }
 
-/**
- * Tick engine (WebAudio) — nu ai nevoie de mp3/wav.
- * Dacă vrei, pot să-ți dau și varianta cu fișier audio (tick.wav).
- */
+/** Tick engine (WebAudio) */
 function createTickEngine() {
   let ctx = null;
 
@@ -113,12 +110,15 @@ function createTickEngine() {
     const c = ensure();
     const now = c.currentTime;
 
-    const duration = 0.02; // 20ms
+    const duration = 0.02;
     const sampleRate = c.sampleRate;
-    const buffer = c.createBuffer(1, Math.floor(sampleRate * duration), sampleRate);
+    const buffer = c.createBuffer(
+      1,
+      Math.floor(sampleRate * duration),
+      sampleRate
+    );
     const data = buffer.getChannelData(0);
 
-    // noise burst cu decay rapid
     for (let i = 0; i < data.length; i++) {
       const t = i / data.length;
       const decay = Math.pow(1 - t, 6);
@@ -133,7 +133,7 @@ function createTickEngine() {
     filter.frequency.setValueAtTime(700, now);
 
     const gain = c.createGain();
-    const vol = 0.06 * intensity; // volum mic
+    const vol = 0.06 * intensity;
     gain.gain.setValueAtTime(vol, now);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
@@ -170,8 +170,6 @@ export default function PrizeWheel({
   durationMs = 4500,
   onWin,
   forcedWinnerIndex = null,
-
-  // opțional
   soundEnabled = true,
 }) {
   const canvasRef = useRef(null);
@@ -184,7 +182,6 @@ export default function PrizeWheel({
 
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotationDeg, setRotationDeg] = useState(0);
-  const [lastWin, setLastWin] = useState(null);
 
   const n = prizes.length;
 
@@ -197,15 +194,15 @@ export default function PrizeWheel({
     };
   }, []);
 
-  // desenăm roata când se schimbă prizes/size
-  useMemo(() => {
+  // ✅ desenare roată: schimbat din useMemo în useEffect (side-effect corect)
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     drawWheel(ctx, prizes, size);
   }, [prizes, size]);
 
-  // cleanup RAF la unmount
+  // cleanup RAF
   useEffect(() => {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -215,20 +212,22 @@ export default function PrizeWheel({
   const spin = async () => {
     if (isSpinning || n < 2) return;
 
-    // AUDIO resume trebuie în handler de click
+    // resume audio în click handler
     if (soundEnabled) {
       try {
         await audioRef.current?.resume?.();
       } catch {}
     }
 
+    // anulăm orice RAF vechi
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
     setIsSpinning(true);
-    setLastWin(null);
 
     const start = performance.now();
     const startRot = rotationDeg;
 
-    // decidem câștigătorul
+    // decidem câștigătorul (dacă e forced, îl respectăm)
     const winnerIndex =
       forcedWinnerIndex !== null
         ? clamp(forcedWinnerIndex, 0, n - 1)
@@ -236,21 +235,20 @@ export default function PrizeWheel({
 
     const slice = 360 / n;
 
-    // centru segment câștigător în coordonate roată (0° spre dreapta)
     const centerOfWinnerDeg = winnerIndex * slice + slice / 2;
-
-    // ca să fie sub pointer (sus), centrul trebuie să ajungă la -90° (= 270°)
     const targetAngleDeg = 270 - centerOfWinnerDeg;
 
     const turns =
       Math.floor(minTurns + Math.random() * (maxTurns - minTurns + 1)) * 360;
 
-    const jitter = (Math.random() - 0.5) * (slice * 0.6);
+    // ✅ dacă e forcedWinnerIndex, scoatem jitter ca să fie 100% deterministic
+    const jitter =
+      forcedWinnerIndex !== null ? 0 : (Math.random() - 0.5) * (slice * 0.6);
 
     const finalRot =
       startRot + turns + (targetAngleDeg - (startRot % 360)) + jitter;
 
-    // tick tracking: un „pas” = un segment
+    // tick tracking
     lastTickStepRef.current = Math.floor(startRot / slice);
     lastTickTimeRef.current = performance.now();
 
@@ -259,22 +257,19 @@ export default function PrizeWheel({
       const eased = easeOutCubic(t);
       const cur = startRot + (finalRot - startRot) * eased;
 
-      // TICK-URI
+      // ticks
       if (soundEnabled && audioRef.current) {
         const step = Math.floor(cur / slice);
-        let lastStep = lastTickStepRef.current ?? step;
+        const lastStep = lastTickStepRef.current ?? step;
 
         const diff = step - lastStep;
 
         if (diff !== 0) {
-          // throttling minim (evită spam audio dacă FPS mic)
           const nowMs = performance.now();
-          const minGap = 18; // ms
-          if (nowMs - lastTickTimeRef.current >= minGap) {
-            // dacă ai sărit multe segmente, dă max 2 tick-uri
-            const capped = Math.min(Math.abs(diff), 2);
+          const minGap = 18;
 
-            // intensitate: mai tare la început, mai încet la final
+          if (nowMs - lastTickTimeRef.current >= minGap) {
+            const capped = Math.min(Math.abs(diff), 2);
             const intensity = 0.65 + (1 - t) * 0.75;
 
             for (let k = 0; k < capped; k++) audioRef.current.tick(intensity);
@@ -291,13 +286,13 @@ export default function PrizeWheel({
       if (t < 1) {
         rafRef.current = requestAnimationFrame(tickFrame);
       } else {
-        const finalDeg = cur;
-        const idx = getWinnerIndex(finalDeg, n);
+        const idx = getWinnerIndex(cur, n);
         const prize = prizes[idx];
 
-        setLastWin(prize);
         setIsSpinning(false);
         onWin?.({ index: idx, prize });
+
+        rafRef.current = null;
       }
     };
 
@@ -360,16 +355,6 @@ export default function PrizeWheel({
       >
         {isSpinning ? "Spinning..." : "Spin"}
       </button>
-
-      <div style={{ color: "#e5e7eb", fontFamily: "system-ui" }}>
-        {lastWin ? (
-          <>
-            Ai câștigat: <b>{lastWin.label}</b>
-          </>
-        ) : (
-          "Apasă Spin 🎯"
-        )}
-      </div>
     </div>
   );
 }
