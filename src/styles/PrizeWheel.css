@@ -11,7 +11,7 @@
   position: relative;
   user-select: none;
   border-radius: 28px;
-  background: var(--ios-card);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f7fb 100%);
   border: 1px solid var(--ios-border);
   box-shadow: var(--ios-shadow);
   display: grid;
@@ -26,8 +26,9 @@
   overflow: hidden;
   transform: rotate(var(--rotation));
   transition: transform 0ms;
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
-  background: #0f172a;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.12),
+    0 0 26px rgba(0, 122, 255, 0.22);
+  background: radial-gradient(120px 120px at 70% 20%, #1f2937, #0f172a);
 }
 
 .prize-wheel__wheel canvas {
@@ -47,25 +48,26 @@
   border-right: 9px solid transparent;
   border-bottom: 1px solid transparent;
   border-top: 9px solid var(--ios-red);
-  filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.2));
+  filter: drop-shadow(0 4px 6px rgba(255, 59, 48, 0.35));
 }
 
 .prize-wheel__button {
   padding: 12px 18px;
   border-radius: 14px;
   border: none;
-  background: var(--ios-blue);
+  background: linear-gradient(180deg, #3ea0ff 0%, #007aff 100%);
   color: #fff;
   font-weight: 700;
   cursor: pointer;
   width: min(220px, 70vw);
-  box-shadow: 0 10px 22px rgba(0, 122, 255, 0.3);
+  box-shadow: 0 8px 18px rgba(0, 122, 255, 0.28),
+    0 0 18px rgba(0, 122, 255, 0.3);
   letter-spacing: 0.3px;
   touch-action: manipulation;
 }
 
 .prize-wheel__button.is-spinning {
-  background: #9abdfc;
+  background: linear-gradient(180deg, #bcd6ff 0%, #9abdfc 100%);
   cursor: not-allowed;
   box-shadow: none;
 }

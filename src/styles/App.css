@@ -1,6 +1,6 @@
 .app {
   min-height: 100dvh;
-  background: var(--ios-bg);
+  background: radial-gradient(1200px 800px at 50% -10%, #ffffff, var(--ios-bg));
   display: grid;
   align-content: start;
   justify-items: center;

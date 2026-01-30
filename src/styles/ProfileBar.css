@@ -8,7 +8,7 @@
   padding: 10px 12px;
   border-radius: 18px;
   margin: 0;
-  background: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f7fb 100%);
   border: 1px solid var(--ios-border);
   backdrop-filter: blur(18px);
 

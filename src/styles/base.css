@@ -20,7 +20,7 @@
   --ios-secondary: rgba(60, 60, 67, 0.6);
   --ios-blue: #007aff;
   --ios-red: #ff3b30;
-  --ios-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+  --ios-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 }
 
 html,
