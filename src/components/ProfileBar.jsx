@@ -1,6 +1,6 @@
 // src/components/ProfileBar.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import "./ProfileBar.css";
+import "../styles/ProfileBar.css";
 
 const BOT_LINK = "https://t.me/McellWheel_Bot";
 
