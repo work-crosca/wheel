@@ -12,3 +12,6 @@ body {
 button {
   font-family: inherit;
 }
+
+html, body { margin: 0; height: 100%; background: #0b1220; overscroll-behavior: none; }
+body { overflow: hidden; -webkit-tap-highlight-color: transparent; }
