@@ -53,19 +53,21 @@ export default function App() {
 
   return (
     <div className="app">
-      <PrizeWheel
-        prizes={prizes}
-        onWin={({ index, prize }) => {
-          console.log("WIN:", index, prize);
+      <div style={{ minHeight: "100dvh" }}>
+        <PrizeWheel
+          prizes={prizes}
+          onWin={({ index, prize }) => {
+            console.log("WIN:", index, prize);
 
-          // dacă nu vrei confetti la "Try again", filtrează aici:
-          setWinPrize(prize);
+            // dacă nu vrei confetti la "Try again", filtrează aici:
+            setWinPrize(prize);
 
-          // aici: call la backend, update balance, etc.
-        }}
-      />
+            // aici: call la backend, update balance, etc.
+          }}
+        />
 
-      <WinModal prize={winPrize} onClose={() => setWinPrize(null)} />
+        <WinModal prize={winPrize} onClose={() => setWinPrize(null)} />
+      </div>
     </div>
   );
 }
