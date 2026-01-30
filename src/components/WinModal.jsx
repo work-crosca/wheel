@@ -5,6 +5,24 @@ import "../styles/WinModal.css";
 export default function WinModal({ prize, onClose }) {
   const firedRef = useRef(false);
 
+  const sharePrize = async () => {
+    const label = prize?.label ?? "premiu";
+    const message = `Am câștigat ${label}!`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Prize Wheel", text: message });
+        return;
+      } catch {
+        // user cancelled or share failed
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch {}
+  };
+
   useEffect(() => {
     if (!prize) return;
 
@@ -47,6 +65,10 @@ export default function WinModal({ prize, onClose }) {
 
         <button onClick={onClose} className="win-modal__button">
           OK
+        </button>
+
+        <button onClick={sharePrize} className="win-modal__share">
+          Share
         </button>
       </div>
     </div>
