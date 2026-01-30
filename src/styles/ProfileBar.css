@@ -7,7 +7,7 @@
 
   padding: 10px 12px;
   border-radius: 16px;
-
+  margin: 24px 0px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.10);
   backdrop-filter: blur(10px);

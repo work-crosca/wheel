@@ -78,12 +78,7 @@ export default function App() {
     <div className="app">
       <div
         style={{
-          minHeight: "100dvh",
-          display: "grid",
-          gridTemplateRows: "auto 1fr",
-          gap: 16,
-          justifyItems: "center",
-          padding: 12,
+          minHeight: "100dvh"
         }}
       >
         <ProfileBar />
