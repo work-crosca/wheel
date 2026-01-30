@@ -5,22 +5,22 @@
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
     "Helvetica Neue", Arial, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  background-color: #f2f2f7;
-  color: #0f172a;
+  background-color: #0b0b0f;
+  color: #f5f6fa;
 
-  --ios-bg: #f2f2f7;
-  --ios-card: #ffffff;
-  --ios-border: rgba(60, 60, 67, 0.12);
-  --ios-label: #0f172a;
-  --ios-secondary: rgba(60, 60, 67, 0.6);
-  --ios-blue: #007aff;
-  --ios-red: #ff3b30;
-  --ios-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  --ios-bg: #0b0b0f;
+  --ios-card: #14151b;
+  --ios-border: rgba(255, 255, 255, 0.08);
+  --ios-label: #f5f6fa;
+  --ios-secondary: rgba(245, 246, 250, 0.65);
+  --ios-blue: #0a84ff;
+  --ios-red: #ff453a;
+  --ios-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
 html,
