@@ -7,7 +7,10 @@ export default function WinModal({ prize, onClose }) {
 
   const sharePrize = async () => {
     const label = prize?.label ?? "premiu";
-    const message = `Am câștigat ${label}!`;
+    const prizeText = `Am câștigat ${label}! 🎉`;
+    const ctaText = `🎁 Încearcă și tu: https://t.me/McellWheel_Bot`;
+
+    const message = `${prizeText}\n${ctaText}`;
 
     if (navigator.share) {
       try {
@@ -74,4 +77,3 @@ export default function WinModal({ prize, onClose }) {
     </div>
   );
 }
-
