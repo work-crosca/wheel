@@ -7,29 +7,27 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "maskable-icon.png"],
       manifest: {
         name: "Prize Wheel",
         short_name: "Wheel",
-        description: "Spin & win",
+        description: "Spin & Win",
         start_url: "/",
-        scope: "/",
-        display: "standalone",
+        display: "standalone", 
         background_color: "#0b1220",
         theme_color: "#0b1220",
         icons: [
           {
-            src: "pwa-192.png",
+            src: "/pwa-192.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "pwa-512.png",
+            src: "/pwa-512.png",
             sizes: "512x512",
             type: "image/png",
           },
           {
-            src: "maskable-icon.png",
+            src: "/maskable-icon.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
