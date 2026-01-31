@@ -4,6 +4,7 @@ import PrizeWheel from "./PrizeWheel";
 import Preloader from "./components/Preloader";
 import WinModal from "./components/WinModal";
 import ProfileBar from "./components/ProfileBar";
+import OpenInTelegramModal from "./components/OpenInTelegramModal";
 import { preloadAll } from "./utils/preloadAssets";
 import { initTelegramMiniApp, getTg, isTelegramMiniApp } from "./telegram";
 import "./styles/App.css";
@@ -11,6 +12,8 @@ import "./styles/App.css";
 export default function App() {
   const [ready, setReady] = useState(false);
   const [winPrize, setWinPrize] = useState(null);
+  const [showOpenInTelegram, setShowOpenInTelegram] = useState(false);
+  const isTg = isTelegramMiniApp();
 
   const prizes = useMemo(
     () => [
@@ -33,7 +36,7 @@ export default function App() {
   );
 
   useEffect(() => {
-    if (!isTelegramMiniApp()) return;
+    if (!isTg) return;
 
     const tg = initTelegramMiniApp();
     if (!tg) return;
@@ -58,7 +61,7 @@ export default function App() {
       tg.BackButton.offClick(handleBack);
       tg.offEvent("themeChanged", applyTheme);
     };
-  }, [winPrize]);
+  }, [winPrize, isTg]);
 
   if (!ready) {
     return (
@@ -77,11 +80,13 @@ export default function App() {
   return (
     <div className="app">
       <div className="app__content">
-        <ProfileBar />
+        {isTg && <ProfileBar />}
 
         <div className="app__stack">
           <PrizeWheel
             prizes={prizes}
+            isTelegram={isTg}
+            onRequireTelegram={() => setShowOpenInTelegram(true)}
             onWin={({ prize }) => {
               if (prize?.value === 0) {
                 try {
@@ -101,6 +106,10 @@ export default function App() {
           />
 
           <WinModal prize={winPrize} onClose={() => setWinPrize(null)} />
+          <OpenInTelegramModal
+            open={showOpenInTelegram}
+            onClose={() => setShowOpenInTelegram(false)}
+          />
         </div>
       </div>
     </div>

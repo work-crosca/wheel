@@ -187,6 +187,8 @@ export default function PrizeWheel({
   soundEnabled = true,
   hapticsEnabled = true, // ✅ nou
   fxSoundsEnabled = true,
+  isTelegram = true,
+  onRequireTelegram,
 }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
@@ -246,6 +248,11 @@ export default function PrizeWheel({
   }, []);
 
   const spin = async () => {
+    if (!isTelegram) {
+      onRequireTelegram?.();
+      return;
+    }
+
     if (isSpinning || n < 2) return;
 
     if (soundEnabled) {

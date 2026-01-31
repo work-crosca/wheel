@@ -14,11 +14,7 @@
     calc(20px + env(safe-area-inset-right))
     calc(28px + env(safe-area-inset-bottom))
     calc(20px + env(safe-area-inset-left));
-  background: linear-gradient(
-    180deg,
-    rgba(18, 20, 28, 0.92) 0%,
-    rgba(11, 11, 15, 0.96) 100%
-  );
+ 
   color: var(--ios-label);
   display: grid;
   align-content: end;
