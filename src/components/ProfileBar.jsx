@@ -1,12 +1,10 @@
 // src/components/ProfileBar.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import { isTelegramMiniApp } from "../telegram";
 import "../styles/ProfileBar.css";
 
 const BOT_LINK = "https://t.me/McellWheel_Bot";
 
-function isTelegramMiniApp() {
-  return Boolean(window.Telegram?.WebApp?.initDataUnsafe?.user);
-}
 
 function initialsFromName(name = "") {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -93,3 +91,4 @@ export default function ProfileBar() {
     </div>
   );
 }
+

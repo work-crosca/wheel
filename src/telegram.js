@@ -2,8 +2,15 @@
 import WebApp from "@twa-dev/sdk";
 
 export function isTelegramMiniApp() {
-  // în browser normal: false
-  return typeof window !== "undefined" && !!window.Telegram?.WebApp;
+  if (typeof window === "undefined") return false;
+
+  const tg = window.Telegram?.WebApp;
+  if (!tg) return false;
+
+  if (tg?.initDataUnsafe?.user) return true;
+
+  const initData = tg?.initData;
+  return typeof initData === "string" && initData.length > 0;
 }
 
 export function getTg() {
@@ -26,3 +33,6 @@ export function initTelegramMiniApp() {
 
   return tg;
 }
+
+
+
