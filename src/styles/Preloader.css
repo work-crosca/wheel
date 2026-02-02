@@ -36,6 +36,15 @@
   border: 1px solid var(--ios-border);
   display: grid;
   place-items: center;
+  overflow: hidden;
+}
+
+.preloader__logo-media {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 14px;
+  display: block;
 }
 
 .preloader__logo-dot {

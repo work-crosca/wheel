@@ -21,16 +21,48 @@ export default function Preloader({
   steps = defaultSteps,
   minDurationMs = 0, // 0 = nu simulam timpul
   onDone, // callback cand e gata
+  animatedStickerSrc = "",
+  animatedStickerAlt = "Loading sticker",
   // daca vrei sa folosesti loaderul pentru asteptat un async extern:
   run, // async () => void
 }) {
   const [progress, setProgress] = useState(0); // 0..100
   const [activeStep, setActiveStep] = useState(0);
   const [done, setDone] = useState(false);
+  const [stickerFailed, setStickerFailed] = useState(false);
 
   const activeLabel = useMemo(() => {
     return steps?.[activeStep]?.label ?? "Se incarca...";
   }, [steps, activeStep]);
+
+  const mediaType = useMemo(() => {
+    if (!animatedStickerSrc) return null;
+    const lower = animatedStickerSrc.toLowerCase();
+    if (lower.endsWith(".webm") || lower.endsWith(".mp4")) return "video";
+    if (
+      lower.endsWith(".gif") ||
+      lower.endsWith(".png") ||
+      lower.endsWith(".jpg") ||
+      lower.endsWith(".jpeg") ||
+      lower.endsWith(".webp")
+    ) {
+      return "image";
+    }
+    if (lower.endsWith(".tgs")) return "tgs";
+    return "image";
+  }, [animatedStickerSrc]);
+
+  useEffect(() => {
+    if (mediaType === "tgs") {
+      console.warn(
+        "[preloader] .tgs sticker not supported in UI, use .webm/.mp4/.gif instead."
+      );
+    }
+  }, [mediaType]);
+
+  useEffect(() => {
+    setStickerFailed(false);
+  }, [animatedStickerSrc]);
 
   useEffect(() => {
     let cancelled = false;
@@ -57,7 +89,13 @@ export default function Preloader({
       setProgress(38);
 
       // daca ai run() — il asteptam aici
-      if (run) await run();
+      if (run) {
+        try {
+          await run();
+        } catch (err) {
+          console.warn("[preloader] run() failed", err);
+        }
+      }
 
       setActiveStep(2);
       setProgress(82);
@@ -79,12 +117,36 @@ export default function Preloader({
 
   if (done) return null;
 
+  const showSticker =
+    Boolean(animatedStickerSrc) && !stickerFailed && mediaType !== "tgs";
+
   return (
     <div className="preloader" style={{ "--progress": `${progress}%` }}>
       <div className="preloader__card">
         <div className="preloader__header">
           <div className="preloader__logo-bubble">
-            <div className="preloader__logo-dot" />
+            {showSticker && mediaType === "video" ? (
+              <video
+                className="preloader__logo-media"
+                src={animatedStickerSrc}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                onError={() => setStickerFailed(true)}
+              />
+            ) : showSticker ? (
+              <img
+                className="preloader__logo-media"
+                src={animatedStickerSrc}
+                alt={animatedStickerAlt}
+                loading="eager"
+                onError={() => setStickerFailed(true)}
+              />
+            ) : (
+              <div className="preloader__logo-dot" />
+            )}
           </div>
           <div>
             <div className="preloader__title">{title}</div>

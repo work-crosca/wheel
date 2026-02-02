@@ -26,6 +26,7 @@ export default function App() {
   const [nextEligibleAt, setNextEligibleAt] = useState(null);
   const [cooldownNoticeReady, setCooldownNoticeReady] = useState(false);
   const [reloadToken, setReloadToken] = useState(0);
+  const loadingStickerSrc = import.meta.env?.VITE_LOADING_STICKER || "";
 
   const assets = useMemo(
     () => ({
@@ -213,6 +214,7 @@ export default function App() {
         title="Prize Wheel"
         subtitle="Încărcăm resursele…"
         minDurationMs={0}
+        animatedStickerSrc={loadingStickerSrc}
         run={async () => {
           await Promise.all([preloadAll(assets), fetchHealth().catch(() => null)]);
         }}
