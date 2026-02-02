@@ -71,6 +71,13 @@
   touch-action: manipulation;
 }
 
+.prize-wheel__button:disabled {
+  background: linear-gradient(180deg, #3b4352 0%, #2a3140 100%);
+  color: #d0d7e2;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .prize-wheel__button.is-spinning {
   background: linear-gradient(180deg, #3b4352 0%, #2a3140 100%);
   cursor: not-allowed;

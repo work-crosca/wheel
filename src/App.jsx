@@ -24,6 +24,7 @@ export default function App() {
   const [spinChannel, setSpinChannel] = useState("");
   const [showSubscribe, setShowSubscribe] = useState(false);
   const [nextEligibleAt, setNextEligibleAt] = useState(null);
+  const [cooldownNoticeReady, setCooldownNoticeReady] = useState(false);
   const [reloadToken, setReloadToken] = useState(0);
 
   const assets = useMemo(
@@ -40,14 +41,21 @@ export default function App() {
     return Number.isFinite(ts) && ts > Date.now();
   }, [nextEligibleAt]);
 
-  const cooldownText = useMemo(() => {
-    if (!cooldownActive) return "";
+  const cooldownInfo = useMemo(() => {
+    if (!cooldownActive) return null;
     const ts = new Date(nextEligibleAt);
-    if (Number.isNaN(ts.getTime())) return "Cooldown active.";
-    return `Poti incerca din nou la ${ts.toLocaleString("ro-RO", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    })}.`;
+    if (Number.isNaN(ts.getTime())) {
+      return { title: "Revino mai tarziu", detail: "Cooldown activ." };
+    }
+
+    return {
+      title: "Revino mai tarziu",
+      detail: "Poti incerca din nou la",
+      time: ts.toLocaleString("ro-RO", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }),
+    };
   }, [cooldownActive, nextEligibleAt]);
 
   const spinDisabled =
@@ -134,6 +142,7 @@ export default function App() {
     setSpinError("");
     setSpinChannel("");
     setShowSubscribe(false);
+    setCooldownNoticeReady(false);
 
     try {
       const initData = getInitData();
@@ -218,7 +227,10 @@ export default function App() {
         {isTg && <ProfileBar />}
 
         <div className="app__stack">
-          {(prizesLoading || prizesError || spinError || cooldownActive) && (
+          {(prizesLoading ||
+            prizesError ||
+            spinError ||
+            (cooldownActive && cooldownNoticeReady)) && (
             <div
               className={`app__notice${
                 prizesError || spinError ? " is-error" : ""
@@ -250,7 +262,27 @@ export default function App() {
               {!prizesLoading &&
                 !prizesError &&
                 !spinError &&
-                cooldownActive && <div>{cooldownText}</div>}
+                cooldownActive &&
+                cooldownNoticeReady &&
+                cooldownInfo && (
+                  <div className="app__notice-cooldown">
+                    <div className="app__notice-title">
+                      <span className="app__notice-badge">Cooldown</span>
+                      <span>{cooldownInfo.title}</span>
+                    </div>
+                    {cooldownInfo.time ? (
+                      <div className="app__notice-detail">
+                        {cooldownInfo.detail}{" "}
+                        <span className="app__notice-time">
+                          {cooldownInfo.time}
+                        </span>
+                        .
+                      </div>
+                    ) : (
+                      <div className="app__notice-detail">{cooldownInfo.detail}</div>
+                    )}
+                  </div>
+                )}
             </div>
           )}
 
@@ -272,6 +304,7 @@ export default function App() {
               }
 
               setWinPrize(prize);
+              setCooldownNoticeReady(true);
 
               try {
                 const tg = getTg();

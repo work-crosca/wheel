@@ -63,3 +63,36 @@
   font-weight: 600;
   text-decoration: underline;
 }
+
+.app__notice-cooldown {
+  display: grid;
+  gap: 6px;
+}
+
+.app__notice-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.app__notice-badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.15);
+  color: #bae6fd;
+}
+
+.app__notice-detail {
+  color: #cbd5f5;
+}
+
+.app__notice-time {
+  font-weight: 700;
+  color: #f1f5f9;
+}
