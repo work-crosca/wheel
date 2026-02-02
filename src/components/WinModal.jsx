@@ -1,14 +1,18 @@
-import React, { useEffect, useRef } from "react";
-import confetti from "canvas-confetti";
+import React, { useEffect, useState } from "react";
+import Confetti from "react-confetti";
 import "../styles/WinModal.css";
 
 export default function WinModal({ prize, onClose }) {
-  const firedRef = useRef(false);
+  const [confettiActive, setConfettiActive] = useState(false);
+  const [size, setSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
+  });
 
   const sharePrize = async () => {
     const label = prize?.label ?? "premiu";
-    const prizeText = `Am câștigat ${label}! 🎉`;
-    const ctaText = `🎁 Încearcă și tu: https://t.me/McellWheel_Bot`;
+    const prizeText = `Am castigat ${label}! 🎉`;
+    const ctaText = `🎁 Incearca si tu: https://t.me/McellWheel_Bot`;
 
     const message = `${prizeText}\n${ctaText}`;
 
@@ -27,40 +31,40 @@ export default function WinModal({ prize, onClose }) {
   };
 
   useEffect(() => {
-    if (!prize) return;
+    if (!prize) {
+      setConfettiActive(false);
+      return;
+    }
 
-    if (firedRef.current) return;
-    firedRef.current = true;
-
-    const duration = 1200;
-    const end = Date.now() + duration;
-
-    const frame = () => {
-      confetti({
-        particleCount: 18,
-        spread: 70,
-        startVelocity: 35,
-        gravity: 1.05,
-        ticks: 200,
-        origin: { x: Math.random() * 0.4 + 0.3, y: 0.12 },
-      });
-
-      if (Date.now() < end) requestAnimationFrame(frame);
-    };
-
-    frame();
-
-    return () => {
-      firedRef.current = false;
-    };
+    setConfettiActive(true);
+    const timeout = setTimeout(() => setConfettiActive(false), 2000);
+    return () => clearTimeout(timeout);
   }, [prize]);
+
+  useEffect(() => {
+    const handleResize = () =>
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   if (!prize) return null;
 
   return (
     <div className="win-modal" onClick={onClose}>
+      {confettiActive && (
+        <Confetti
+          width={size.width}
+          height={size.height}
+          numberOfPieces={220}
+          gravity={0.25}
+          wind={0.01}
+          recycle={false}
+        />
+      )}
       <div className="win-modal__card" onClick={(e) => e.stopPropagation()}>
-        <div className="win-modal__title">🎉 Felicitări!</div>
+        <div className="win-modal__title">🎉 Felicitari!</div>
 
         <div className="win-modal__prize">
           <div className="win-modal__label">{prize.label}</div>

@@ -1,20 +1,28 @@
 import React from "react";
+import { getTg } from "../telegram";
 import "../styles/WinModal.css";
 
 function openChannelLink(channel) {
   if (!channel) return;
   const clean = channel.replace("@", "");
+  const tg = getTg();
+  const webLink = `https://t.me/${clean}`;
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (tg?.openTelegramLink) {
+    tg.openTelegramLink(webLink);
+    return;
+  }
 
   if (isMobile) {
     window.location.href = `tg://resolve?domain=${clean}`;
     setTimeout(() => {
-      window.open(`https://t.me/${clean}`, "_blank", "noopener,noreferrer");
+      window.open(webLink, "_blank", "noopener,noreferrer");
     }, 700);
     return;
   }
 
-  window.open(`https://t.me/${clean}`, "_blank", "noopener,noreferrer");
+  window.open(webLink, "_blank", "noopener,noreferrer");
 }
 
 export default function SubscribeModal({ open, channel, onClose }) {
