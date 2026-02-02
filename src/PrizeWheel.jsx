@@ -16,6 +16,14 @@ function drawWheel(ctx, prizes, size) {
   const cx = r;
   const cy = r;
 
+  if (!Array.isArray(prizes) || prizes.length === 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r - 2, 0, Math.PI * 2);
+    ctx.fillStyle = "#111827";
+    ctx.fill();
+    return;
+  }
+
   const n = prizes.length;
   const slice = (Math.PI * 2) / n;
 
@@ -183,17 +191,24 @@ export default function PrizeWheel({
   maxTurns = 7,
   durationMs = 4500,
   onWin,
+  onSpinRequest,
   forcedWinnerIndex = null,
   soundEnabled = true,
   hapticsEnabled = true, // ✅ nou
   fxSoundsEnabled = true,
   isTelegram = true,
   onRequireTelegram,
+  disabled = false,
+  spinLabel = "Spin",
+  spinningLabel = "Spinning...",
+  loadingLabel = "Loading...",
+  disabledLabel = "Unavailable",
 }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
 
   const audioRef = useRef(null);
+  const resolvedPrizeRef = useRef(null);
   const lastTickStepRef = useRef(null);
   const lastTickTimeRef = useRef(0);
 
@@ -201,6 +216,7 @@ export default function PrizeWheel({
   const lastHapticMsRef = useRef(0);
 
   const [isSpinning, setIsSpinning] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
   const [rotationDeg, setRotationDeg] = useState(0);
   const [wheelSize, setWheelSize] = useState(320);
 
@@ -253,7 +269,27 @@ export default function PrizeWheel({
       return;
     }
 
-    if (isSpinning || n < 2) return;
+    if (isSpinning || isRequesting || disabled || n < 2) return;
+
+    let resolvedWinnerIndex = null;
+    let resolvedPrize = null;
+
+    if (onSpinRequest) {
+      setIsRequesting(true);
+      try {
+        const result = await onSpinRequest();
+        if (!result) {
+          setIsRequesting(false);
+          return;
+        }
+        resolvedWinnerIndex = result.index;
+        resolvedPrize = result.prize || null;
+      } catch {
+        setIsRequesting(false);
+        return;
+      }
+      setIsRequesting(false);
+    }
 
     if (soundEnabled) {
       try {
@@ -270,7 +306,9 @@ export default function PrizeWheel({
     const startRot = rotationDeg;
 
     const winnerIndex =
-      forcedWinnerIndex !== null
+      resolvedWinnerIndex !== null && resolvedWinnerIndex !== undefined
+        ? clamp(resolvedWinnerIndex, 0, n - 1)
+        : forcedWinnerIndex !== null
         ? clamp(forcedWinnerIndex, 0, n - 1)
         : Math.floor(Math.random() * n);
 
@@ -282,11 +320,14 @@ export default function PrizeWheel({
       Math.floor(minTurns + Math.random() * (maxTurns - minTurns + 1)) * 360;
 
     const jitter =
-      forcedWinnerIndex !== null ? 0 : (Math.random() - 0.5) * (slice * 0.6);
+      forcedWinnerIndex !== null || resolvedWinnerIndex !== null
+        ? 0
+        : (Math.random() - 0.5) * (slice * 0.6);
 
     const finalRot =
       startRot + turns + (targetAngleDeg - (startRot % 360)) + jitter;
 
+    resolvedPrizeRef.current = resolvedPrize;
     lastTickStepRef.current = Math.floor(startRot / slice);
     lastTickTimeRef.current = performance.now();
     lastHapticMsRef.current = performance.now();
@@ -336,7 +377,7 @@ export default function PrizeWheel({
         rafRef.current = requestAnimationFrame(tickFrame);
       } else {
         const idx = getWinnerIndex(cur, n);
-        const prize = prizes[idx];
+        const prize = resolvedPrizeRef.current || prizes[idx];
 
         setRotationDeg(cur);
         setIsSpinning(false);
@@ -346,6 +387,7 @@ export default function PrizeWheel({
           } catch {}
         }
         onWin?.({ index: idx, prize });
+        resolvedPrizeRef.current = null;
 
         rafRef.current = null;
       }
@@ -375,10 +417,16 @@ export default function PrizeWheel({
 
       <button
         onClick={spin}
-        disabled={isSpinning}
+        disabled={isSpinning || isRequesting || disabled}
         className={`prize-wheel__button${isSpinning ? " is-spinning" : ""}`}
       >
-        {isSpinning ? "Spinning..." : "Spin"}
+        {isSpinning
+          ? spinningLabel
+          : isRequesting
+          ? loadingLabel
+          : disabled
+          ? disabledLabel
+          : spinLabel}
       </button>
     </div>
   );

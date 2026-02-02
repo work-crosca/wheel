@@ -6,7 +6,8 @@ import WinModal from "./components/WinModal";
 import ProfileBar from "./components/ProfileBar";
 import OpenInTelegramModal from "./components/OpenInTelegramModal";
 import { preloadAll } from "./utils/preloadAssets";
-import { initTelegramMiniApp, getTg, isTelegramMiniApp } from "./telegram";
+import { initTelegramMiniApp, getTg, getInitData, isTelegramMiniApp } from "./telegram";
+import { fetchPrizes, spinWheel } from "./utils/api";
 import "./styles/App.css";
 
 export default function App() {
@@ -15,17 +16,12 @@ export default function App() {
   const [showOpenInTelegram, setShowOpenInTelegram] = useState(false);
   const isTg = isTelegramMiniApp();
 
-  const prizes = useMemo(
-    () => [
-      { label: "10 coins", value: 10, color: "#22C55E" },
-      { label: "20 coins", value: 20, color: "#3B82F6" },
-      { label: "50 coins", value: 50, color: "#A855F7" },
-      { label: "1 ticket", value: 1, color: "#F59E0B" },
-      { label: "Try again", value: 0, color: "#EF4444" },
-      { label: "Mystery", value: "mystery", color: "#06B6D4" },
-    ],
-    []
-  );
+  const [prizes, setPrizes] = useState([]);
+  const [prizesLoading, setPrizesLoading] = useState(true);
+  const [prizesError, setPrizesError] = useState("");
+  const [spinError, setSpinError] = useState("");
+  const [nextEligibleAt, setNextEligibleAt] = useState(null);
+  const [reloadToken, setReloadToken] = useState(0);
 
   const assets = useMemo(
     () => ({
@@ -34,6 +30,60 @@ export default function App() {
     }),
     []
   );
+
+  const cooldownActive = useMemo(() => {
+    if (!nextEligibleAt) return false;
+    const ts = new Date(nextEligibleAt).getTime();
+    return Number.isFinite(ts) && ts > Date.now();
+  }, [nextEligibleAt]);
+
+  const cooldownText = useMemo(() => {
+    if (!cooldownActive) return "";
+    const ts = new Date(nextEligibleAt);
+    if (Number.isNaN(ts.getTime())) return "Cooldown active.";
+    return `Poti incerca din nou la ${ts.toLocaleString("ro-RO", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })}.`;
+  }, [cooldownActive, nextEligibleAt]);
+
+  const spinDisabled =
+    prizesLoading || prizesError.length > 0 || prizes.length < 2 || cooldownActive;
+
+  const disabledLabel = useMemo(() => {
+    if (prizesLoading) return "Se incarca...";
+    if (cooldownActive) return "Revino mai tarziu";
+    if (prizes.length < 2) return "Premii indisponibile";
+    if (prizesError) return "Indisponibil";
+    return "Indisponibil";
+  }, [prizesLoading, cooldownActive, prizes.length, prizesError]);
+
+  const handleRetry = () => setReloadToken((value) => value + 1);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setPrizesLoading(true);
+      setPrizesError("");
+      try {
+        const data = await fetchPrizes();
+        if (!cancelled) setPrizes(data);
+      } catch {
+        if (!cancelled) {
+          setPrizes([]);
+          setPrizesError("Nu am putut incarca premiile.");
+        }
+      } finally {
+        if (!cancelled) setPrizesLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadToken]);
 
   useEffect(() => {
     if (!isTg) return;
@@ -63,6 +113,73 @@ export default function App() {
     };
   }, [winPrize, isTg]);
 
+  const handleSpinRequest = async () => {
+    setSpinError("");
+
+    try {
+      const initData = getInitData();
+      const result = await spinWheel(initData);
+
+      setNextEligibleAt(result?.nextEligibleAt || null);
+
+      const prize = result?.prize || null;
+      if (!prize) {
+        setSpinError("Raspuns invalid de la server.");
+        return null;
+      }
+
+      let index = prizes.findIndex((item) => item.id === prize.id);
+      if (index === -1 && prize.label) {
+        index = prizes.findIndex((item) => item.label === prize.label);
+      }
+
+      if (index === -1) {
+        setSpinError("Premiul primit nu exista in roata.");
+        return null;
+      }
+
+      return { index, prize };
+    } catch (err) {
+      const code = err?.code || err?.message || "SERVER_ERROR";
+      const channel = err?.channel;
+      const nextDate = err?.nextEligibleAt || null;
+
+      if (code === "WEEKLY_LIMIT") setNextEligibleAt(nextDate);
+
+      if (code === "UNAUTHORIZED") {
+        setSpinError("Autentificare Telegram invalida. Redeschide mini-app-ul.");
+      } else if (code === "MEMBERSHIP_CHECK_FAILED") {
+        setSpinError("Nu am putut verifica abonarea. Incearca din nou.");
+      } else if (code === "NOT_SUBSCRIBED") {
+        setSpinError(
+          `Trebuie sa fii abonat la ${channel || "canalul nostru"}.`
+        );
+      } else if (code === "WEEKLY_LIMIT") {
+        if (nextDate) {
+          const ts = new Date(nextDate);
+          if (!Number.isNaN(ts.getTime())) {
+            setSpinError(
+              `Poti incerca din nou la ${ts.toLocaleString("ro-RO", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}.`
+            );
+          } else {
+            setSpinError("Ai atins limita saptamanala.");
+          }
+        } else {
+          setSpinError("Ai atins limita saptamanala.");
+        }
+      } else if (code === "NO_PRIZES_CONFIGURED") {
+        setSpinError("Nu sunt premii configurate.");
+      } else {
+        setSpinError("Eroare server. Incearca mai tarziu.");
+      }
+
+      return null;
+    }
+  };
+
   if (!ready) {
     return (
       <Preloader
@@ -83,10 +200,39 @@ export default function App() {
         {isTg && <ProfileBar />}
 
         <div className="app__stack">
+          {(prizesLoading || prizesError || spinError || cooldownActive) && (
+            <div
+              className={`app__notice${
+                prizesError || spinError ? " is-error" : ""
+              }`}
+            >
+              {prizesLoading && <div>Incarcam premiile...</div>}
+              {!prizesLoading && prizesError && (
+                <div className="app__notice-row">
+                  <span>{prizesError}</span>
+                  <button type="button" onClick={handleRetry}>
+                    Reincearca
+                  </button>
+                </div>
+              )}
+              {!prizesLoading && !prizesError && spinError && (
+                <div>{spinError}</div>
+              )}
+              {!prizesLoading &&
+                !prizesError &&
+                !spinError &&
+                cooldownActive && <div>{cooldownText}</div>}
+            </div>
+          )}
+
           <PrizeWheel
             prizes={prizes}
             isTelegram={isTg}
             onRequireTelegram={() => setShowOpenInTelegram(true)}
+            onSpinRequest={handleSpinRequest}
+            disabled={spinDisabled}
+            loadingLabel="Se incarca..."
+            disabledLabel={disabledLabel}
             onWin={({ prize }) => {
               if (prize?.value === 0) {
                 try {

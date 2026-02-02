@@ -21,6 +21,12 @@ export function getTg() {
   }
 }
 
+export function getInitData() {
+  const tg = getTg();
+  if (tg?.initData) return tg.initData;
+  return window.Telegram?.WebApp?.initData || "";
+}
+
 export function initTelegramMiniApp() {
   const tg = getTg();
   if (!tg) return null;
