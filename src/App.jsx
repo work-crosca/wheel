@@ -20,6 +20,7 @@ export default function App() {
   const [prizesLoading, setPrizesLoading] = useState(true);
   const [prizesError, setPrizesError] = useState("");
   const [spinError, setSpinError] = useState("");
+  const [spinChannel, setSpinChannel] = useState("");
   const [nextEligibleAt, setNextEligibleAt] = useState(null);
   const [reloadToken, setReloadToken] = useState(0);
 
@@ -129,6 +130,7 @@ export default function App() {
 
   const handleSpinRequest = async () => {
     setSpinError("");
+    setSpinChannel("");
 
     try {
       const initData = getInitData();
@@ -165,9 +167,8 @@ export default function App() {
       } else if (code === "MEMBERSHIP_CHECK_FAILED") {
         setSpinError("Nu am putut verifica abonarea. Incearca din nou.");
       } else if (code === "NOT_SUBSCRIBED") {
-        setSpinError(
-          `Trebuie sa fii abonat la ${channel || "canalul nostru"}.`
-        );
+        setSpinError("Trebuie sa fii abonat la");
+        setSpinChannel(channel || "");
       } else if (code === "WEEKLY_LIMIT") {
         if (nextDate) {
           const ts = new Date(nextDate);
@@ -230,7 +231,18 @@ export default function App() {
                 </div>
               )}
               {!prizesLoading && !prizesError && spinError && (
-                <div>{spinError}</div>
+                <div>
+                  {spinError}{" "}
+                  {spinChannel ? (
+                    <a
+                      href={`https://t.me/${spinChannel.replace("@", "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {spinChannel}
+                    </a>
+                  ) : null}
+                </div>
               )}
               {!prizesLoading &&
                 !prizesError &&

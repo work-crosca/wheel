@@ -57,3 +57,9 @@
   border-radius: 10px;
   cursor: pointer;
 }
+
+.app__notice a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+}
