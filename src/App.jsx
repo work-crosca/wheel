@@ -113,6 +113,20 @@ export default function App() {
     };
   }, [winPrize, isTg]);
 
+  useEffect(() => {
+    if (!isTg) return;
+    const initData = getInitData();
+    const params = new URLSearchParams(initData);
+    const hash = params.get("hash");
+    const authDate = params.get("auth_date");
+    console.info("[telegram] initData debug", {
+      hasInitData: Boolean(initData),
+      length: initData?.length || 0,
+      hasHash: Boolean(hash),
+      authDate,
+    });
+  }, [isTg]);
+
   const handleSpinRequest = async () => {
     setSpinError("");
 
