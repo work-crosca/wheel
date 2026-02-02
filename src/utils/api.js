@@ -48,6 +48,19 @@ export async function fetchPrizes() {
   return data;
 }
 
+export async function fetchHealth() {
+  const data = await request("/health", {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!data || data.ok !== true) {
+    throw new Error("HEALTH_CHECK_FAILED");
+  }
+
+  return data;
+}
+
 export async function spinWheel(initData) {
   if (!initData) {
     const err = new Error("UNAUTHORIZED");

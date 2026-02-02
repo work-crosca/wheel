@@ -7,7 +7,7 @@ import ProfileBar from "./components/ProfileBar";
 import OpenInTelegramModal from "./components/OpenInTelegramModal";
 import { preloadAll } from "./utils/preloadAssets";
 import { initTelegramMiniApp, getTg, getInitData, isTelegramMiniApp } from "./telegram";
-import { fetchPrizes, spinWheel } from "./utils/api";
+import { fetchHealth, fetchPrizes, spinWheel } from "./utils/api";
 import "./styles/App.css";
 
 export default function App() {
@@ -185,9 +185,9 @@ export default function App() {
       <Preloader
         title="Prize Wheel"
         subtitle="Încărcăm resursele…"
-        minDurationMs={900}
+        minDurationMs={0}
         run={async () => {
-          await preloadAll(assets);
+          await Promise.all([preloadAll(assets), fetchHealth().catch(() => null)]);
         }}
         onDone={() => setReady(true)}
       />

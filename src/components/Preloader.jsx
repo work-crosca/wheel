@@ -3,25 +3,25 @@ import { useEffect, useMemo, useState } from "react";
 import "../styles/Preloader.css";
 
 const defaultSteps = [
-  { key: "ui", label: "Pregătim interfața…" },
-  { key: "assets", label: "Încărcăm resursele…" },
-  { key: "ready", label: "Aproape gata…" },
+  { key: "ui", label: "Pregatim interfata..." },
+  { key: "assets", label: "Incarcam resursele..." },
+  { key: "ready", label: "Aproape gata..." },
 ];
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-// mic helper: așteaptă X ms (pentru animație smooth)
+// mic helper: asteapta X ms (pentru animatie smooth)
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Preloader({
-  title = "Se încarcă…",
-  subtitle = "Doar o secundă",
+  title = "Se incarca...",
+  subtitle = "Doar o secunda",
   steps = defaultSteps,
-  minDurationMs = 700, // ca să nu pâlpâie dacă e prea rapid
-  onDone, // callback când e gata
-  // dacă vrei să folosești loaderul pentru așteptat un async extern:
+  minDurationMs = 0, // 0 = nu simulam timpul
+  onDone, // callback cand e gata
+  // daca vrei sa folosesti loaderul pentru asteptat un async extern:
   run, // async () => void
 }) {
   const [progress, setProgress] = useState(0); // 0..100
@@ -29,14 +29,14 @@ export default function Preloader({
   const [done, setDone] = useState(false);
 
   const activeLabel = useMemo(() => {
-    return steps?.[activeStep]?.label ?? "Se încarcă…";
+    return steps?.[activeStep]?.label ?? "Se incarca...";
   }, [steps, activeStep]);
 
   useEffect(() => {
     let cancelled = false;
 
     const finish = async () => {
-      // animăm până la 100
+      // animam pana la 100
       setProgress((p) => (p < 95 ? 95 : p));
       await wait(150);
       if (cancelled) return;
@@ -50,36 +50,24 @@ export default function Preloader({
     const start = async () => {
       const startedAt = performance.now();
 
-      // progres "fake" controlat ca să fie fluid
-      const pump = setInterval(() => {
-        setProgress((p) => {
-          if (p >= 92) return p;
-          return p + Math.max(0.4, (92 - p) * 0.03);
-        });
-      }, 50);
+      setActiveStep(0);
+      setProgress(12);
 
-      try {
-        // rulăm pașii
-        setActiveStep(0);
-        await wait(120);
+      setActiveStep(1);
+      setProgress(38);
 
-        setActiveStep(1);
-        await wait(120);
+      // daca ai run() — il asteptam aici
+      if (run) await run();
 
-        // dacă ai run() — îl așteptăm aici
-        if (run) await run();
+      setActiveStep(2);
+      setProgress(82);
 
-        setActiveStep(2);
+      // respecta minDuration
+      const elapsed = performance.now() - startedAt;
+      const remaining = clamp(minDurationMs - elapsed, 0, minDurationMs);
+      if (remaining) await wait(remaining);
 
-        // respectă minDuration
-        const elapsed = performance.now() - startedAt;
-        const remaining = clamp(minDurationMs - elapsed, 0, minDurationMs);
-        if (remaining) await wait(remaining);
-
-        if (!cancelled) await finish();
-      } finally {
-        clearInterval(pump);
-      }
+      if (!cancelled) await finish();
     };
 
     start();
