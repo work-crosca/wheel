@@ -5,6 +5,7 @@ import Preloader from "./components/Preloader";
 import WinModal from "./components/WinModal";
 import ProfileBar from "./components/ProfileBar";
 import OpenInTelegramModal from "./components/OpenInTelegramModal";
+import SubscribeModal from "./components/SubscribeModal";
 import { preloadAll } from "./utils/preloadAssets";
 import { initTelegramMiniApp, getTg, getInitData, isTelegramMiniApp } from "./telegram";
 import { fetchHealth, fetchPrizes, spinWheel } from "./utils/api";
@@ -21,6 +22,7 @@ export default function App() {
   const [prizesError, setPrizesError] = useState("");
   const [spinError, setSpinError] = useState("");
   const [spinChannel, setSpinChannel] = useState("");
+  const [showSubscribe, setShowSubscribe] = useState(false);
   const [nextEligibleAt, setNextEligibleAt] = useState(null);
   const [reloadToken, setReloadToken] = useState(0);
 
@@ -131,6 +133,7 @@ export default function App() {
   const handleSpinRequest = async () => {
     setSpinError("");
     setSpinChannel("");
+    setShowSubscribe(false);
 
     try {
       const initData = getInitData();
@@ -167,8 +170,8 @@ export default function App() {
       } else if (code === "MEMBERSHIP_CHECK_FAILED") {
         setSpinError("Nu am putut verifica abonarea. Incearca din nou.");
       } else if (code === "NOT_SUBSCRIBED") {
-        setSpinError("Trebuie sa fii abonat la");
         setSpinChannel(channel || "");
+        setShowSubscribe(true);
       } else if (code === "WEEKLY_LIMIT") {
         if (nextDate) {
           const ts = new Date(nextDate);
@@ -278,6 +281,11 @@ export default function App() {
           />
 
           <WinModal prize={winPrize} onClose={() => setWinPrize(null)} />
+          <SubscribeModal
+            open={showSubscribe}
+            channel={spinChannel}
+            onClose={() => setShowSubscribe(false)}
+          />
           <OpenInTelegramModal
             open={showOpenInTelegram}
             onClose={() => setShowOpenInTelegram(false)}
