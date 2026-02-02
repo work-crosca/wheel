@@ -34,8 +34,7 @@ export function initTelegramMiniApp() {
   tg.ready();
   tg.expand(); // full-height
 
-  // opțional: confirm la închidere (de obicei NU, ca să fie ca Telegram)
-  // tg.enableClosingConfirmation();
+  tg.enableClosingConfirmation();
 
   return tg;
 }
