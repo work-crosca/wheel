@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import "../styles/WinModal.css";
 
-export default function WinModal({ prize, onClose }) {
+export default function WinModal({ prize, promoCode, onClose }) {
   const [confettiActive, setConfettiActive] = useState(false);
   const [size, setSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
@@ -68,6 +68,12 @@ export default function WinModal({ prize, onClose }) {
 
         <div className="win-modal__prize">
           <div className="win-modal__label">{prize.label}</div>
+          {promoCode?.code && (
+            <div className="win-modal__promo">
+              <div className="win-modal__promo-label">Promo code</div>
+              <div className="win-modal__promo-code">{promoCode.code}</div>
+            </div>
+          )}
         </div>
 
         <button onClick={onClose} className="win-modal__button">

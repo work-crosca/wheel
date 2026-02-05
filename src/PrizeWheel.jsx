@@ -209,6 +209,7 @@ export default function PrizeWheel({
 
   const audioRef = useRef(null);
   const resolvedPrizeRef = useRef(null);
+  const resolvedPromoCodeRef = useRef(null);
   const lastTickStepRef = useRef(null);
   const lastTickTimeRef = useRef(0);
 
@@ -273,6 +274,7 @@ export default function PrizeWheel({
 
     let resolvedWinnerIndex = null;
     let resolvedPrize = null;
+    let resolvedPromoCode = null;
 
     if (onSpinRequest) {
       setIsRequesting(true);
@@ -284,6 +286,7 @@ export default function PrizeWheel({
         }
         resolvedWinnerIndex = result.index;
         resolvedPrize = result.prize || null;
+        resolvedPromoCode = result.promoCode || null;
       } catch {
         setIsRequesting(false);
         return;
@@ -328,6 +331,7 @@ export default function PrizeWheel({
       startRot + turns + (targetAngleDeg - (startRot % 360)) + jitter;
 
     resolvedPrizeRef.current = resolvedPrize;
+    resolvedPromoCodeRef.current = resolvedPromoCode;
     lastTickStepRef.current = Math.floor(startRot / slice);
     lastTickTimeRef.current = performance.now();
     lastHapticMsRef.current = performance.now();
@@ -378,6 +382,7 @@ export default function PrizeWheel({
       } else {
         const idx = getWinnerIndex(cur, n);
         const prize = resolvedPrizeRef.current || prizes[idx];
+        const promoCode = resolvedPromoCodeRef.current || null;
 
         setRotationDeg(cur);
         setIsSpinning(false);
@@ -386,8 +391,9 @@ export default function PrizeWheel({
             audioRef.current?.playWin?.();
           } catch {}
         }
-        onWin?.({ index: idx, prize });
+        onWin?.({ index: idx, prize, promoCode });
         resolvedPrizeRef.current = null;
+        resolvedPromoCodeRef.current = null;
 
         rafRef.current = null;
       }

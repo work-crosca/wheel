@@ -14,6 +14,7 @@ import "./styles/App.css";
 export default function App() {
   const [ready, setReady] = useState(false);
   const [winPrize, setWinPrize] = useState(null);
+  const [winPromoCode, setWinPromoCode] = useState(null);
   const [showOpenInTelegram, setShowOpenInTelegram] = useState(false);
   const isTg = isTelegramMiniApp();
 
@@ -167,7 +168,7 @@ export default function App() {
         return null;
       }
 
-      return { index, prize };
+      return { index, prize, promoCode: result?.promoCode || null };
     } catch (err) {
       const code = err?.code || err?.message || "SERVER_ERROR";
       const channel = err?.channel;
@@ -321,7 +322,7 @@ export default function App() {
             disabled={spinDisabled}
             loadingLabel="Se incarca..."
             disabledLabel={disabledLabel}
-            onWin={({ prize }) => {
+            onWin={({ prize, promoCode }) => {
               if (prize?.value === 0) {
                 try {
                   const tg = getTg();
@@ -331,6 +332,7 @@ export default function App() {
               }
 
               setWinPrize(prize);
+              setWinPromoCode(promoCode || null);
               setCooldownNoticeReady(true);
 
               try {
@@ -340,7 +342,14 @@ export default function App() {
             }}
           />
 
-          <WinModal prize={winPrize} onClose={() => setWinPrize(null)} />
+          <WinModal
+            prize={winPrize}
+            promoCode={winPromoCode}
+            onClose={() => {
+              setWinPrize(null);
+              setWinPromoCode(null);
+            }}
+          />
           <SubscribeModal
             open={showSubscribe}
             channel={spinChannel}
