@@ -61,6 +61,23 @@ export async function fetchHealth() {
   return data;
 }
 
+export async function fetchAvailability(initData) {
+  if (!initData) {
+    const err = new Error("UNAUTHORIZED");
+    err.code = "UNAUTHORIZED";
+    throw err;
+  }
+
+  return request("/api/availability", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ initData }),
+  });
+}
+
 export async function spinWheel(initData) {
   if (!initData) {
     const err = new Error("UNAUTHORIZED");

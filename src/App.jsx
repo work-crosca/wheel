@@ -8,7 +8,7 @@ import OpenInTelegramModal from "./components/OpenInTelegramModal";
 import SubscribeModal from "./components/SubscribeModal";
 import { preloadAll } from "./utils/preloadAssets";
 import { initTelegramMiniApp, getTg, getInitData, isTelegramMiniApp } from "./telegram";
-import { fetchHealth, fetchPrizes, spinWheel } from "./utils/api";
+import { fetchAvailability, fetchHealth, fetchPrizes, spinWheel } from "./utils/api";
 import "./styles/App.css";
 
 export default function App() {
@@ -27,6 +27,7 @@ export default function App() {
   const [cooldownNoticeReady, setCooldownNoticeReady] = useState(false);
   const [reloadToken, setReloadToken] = useState(0);
   const loadingStickerSrc = import.meta.env?.VITE_LOADING_STICKER || "";
+  const cooldownStorageKey = "wheel_nextEligibleAt";
 
   const assets = useMemo(
     () => ({
@@ -71,6 +72,27 @@ export default function App() {
   }, [prizesLoading, cooldownActive, prizes.length, prizesError]);
 
   const handleRetry = () => setReloadToken((value) => value + 1);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(cooldownStorageKey);
+      if (!stored) return;
+      const ts = new Date(stored).getTime();
+      if (Number.isFinite(ts) && ts > Date.now()) {
+        setNextEligibleAt(stored);
+        setCooldownNoticeReady(true);
+      } else {
+        localStorage.removeItem(cooldownStorageKey);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (nextEligibleAt) localStorage.setItem(cooldownStorageKey, nextEligibleAt);
+      else localStorage.removeItem(cooldownStorageKey);
+    } catch {}
+  }, [nextEligibleAt]);
 
   useEffect(() => {
     let cancelled = false;
@@ -216,7 +238,33 @@ export default function App() {
         minDurationMs={0}
         animatedStickerSrc={loadingStickerSrc}
         run={async () => {
-          await Promise.all([preloadAll(assets), fetchHealth().catch(() => null)]);
+          const availabilityTask = async () => {
+            if (!isTg) return;
+            try {
+              const initData = getInitData();
+              const result = await fetchAvailability(initData);
+              setNextEligibleAt(result?.nextEligibleAt || null);
+              setCooldownNoticeReady(result?.eligible === false);
+            } catch (err) {
+              const code = err?.code || err?.message || "SERVER_ERROR";
+              const channel = err?.channel;
+
+              if (code === "UNAUTHORIZED") {
+                setSpinError("Autentificare Telegram invalida. Redeschide mini-app-ul.");
+              } else if (code === "MEMBERSHIP_CHECK_FAILED") {
+                setSpinError("Nu am putut verifica abonarea. Incearca din nou.");
+              } else if (code === "NOT_SUBSCRIBED") {
+                setSpinChannel(channel || "");
+                setShowSubscribe(true);
+              }
+            }
+          };
+
+          await Promise.all([
+            preloadAll(assets),
+            fetchHealth().catch(() => null),
+            availabilityTask().catch(() => null),
+          ]);
         }}
         onDone={() => setReady(true)}
       />
