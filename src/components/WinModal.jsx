@@ -11,8 +11,8 @@ export default function WinModal({ prize, promoCode, onClose }) {
 
   const sharePrize = async () => {
     const label = prize?.label ?? "premiu";
-    const prizeText = `Am castigat ${label}! 🎉`;
-    const ctaText = `🎁 Incearca si tu: https://t.me/McellWheel_Bot`;
+    const prizeText = `Am castigat ${label}! ðŸŽ‰`;
+    const ctaText = `ðŸŽ Incearca si tu: https://t.me/McellWheel_Bot`;
 
     const message = `${prizeText}\n${ctaText}`;
 
@@ -30,6 +30,13 @@ export default function WinModal({ prize, promoCode, onClose }) {
     } catch {}
   };
 
+  const copyPromoCode = async () => {
+    if (!promoCode?.code) return;
+    try {
+      await navigator.clipboard.writeText(promoCode.code);
+    } catch {}
+  };
+
   useEffect(() => {
     if (!prize) {
       setConfettiActive(false);
@@ -37,8 +44,6 @@ export default function WinModal({ prize, promoCode, onClose }) {
     }
 
     setConfettiActive(true);
-    const timeout = setTimeout(() => setConfettiActive(false), 2000);
-    return () => clearTimeout(timeout);
   }, [prize]);
 
   useEffect(() => {
@@ -60,18 +65,31 @@ export default function WinModal({ prize, promoCode, onClose }) {
           numberOfPieces={220}
           gravity={0.25}
           wind={0.01}
-          recycle={false}
+          recycle={true}
         />
       )}
       <div className="win-modal__card" onClick={(e) => e.stopPropagation()}>
-        <div className="win-modal__title">🎉 Felicitari!</div>
+        <div className="win-modal__title">ðŸŽ‰ Felicitari!</div>
 
         <div className="win-modal__prize">
-          <div className="win-modal__label">{prize.label}</div>
+          <div className="win-modal__label">
+            Ai castigat
+            <br />
+            premiu {prize.label}
+          </div>
           {promoCode?.code && (
             <div className="win-modal__promo">
               <div className="win-modal__promo-label">Promo code</div>
-              <div className="win-modal__promo-code">{promoCode.code}</div>
+              <div className="win-modal__promo-row">
+                <div className="win-modal__promo-code">{promoCode.code}</div>
+                <button
+                  type="button"
+                  className="win-modal__promo-copy"
+                  onClick={copyPromoCode}
+                >
+                  Copy
+                </button>
+              </div>
             </div>
           )}
         </div>

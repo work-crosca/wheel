@@ -58,6 +58,11 @@
   gap: 6px;
 }
 
+.win-modal__promo-row {
+  display: grid;
+  gap: 10px;
+}
+
 .win-modal__promo-label {
   font-size: 12px;
   font-weight: 700;
@@ -77,6 +82,17 @@
   padding: 8px 12px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
+}
+
+.win-modal__promo-copy {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(176, 107, 255, 0.4);
+  background: rgba(140, 84, 255, 0.18);
+  color: #e9d9ff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .win-modal__button {
