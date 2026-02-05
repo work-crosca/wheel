@@ -13,12 +13,12 @@
   background-color: #0b0b0f;
   color: #f5f6fa;
 
-  --ios-bg: #0b0b0f;
+  --ios-bg: #000;
   --ios-card: #14151b;
   --ios-border: rgba(255, 255, 255, 0.08);
   --ios-label: #f5f6fa;
   --ios-secondary: rgba(245, 246, 250, 0.65);
-  --ios-blue: #0a84ff;
+  --ios-blue: #A322E6;
   --ios-red: #ff453a;
   --ios-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
