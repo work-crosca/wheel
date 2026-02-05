@@ -4,6 +4,7 @@ import "../styles/WinModal.css";
 
 export default function WinModal({ prize, promoCode, onClose }) {
   const [confettiActive, setConfettiActive] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [size, setSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
     height: typeof window !== "undefined" ? window.innerHeight : 0,
@@ -34,6 +35,8 @@ export default function WinModal({ prize, promoCode, onClose }) {
     if (!promoCode?.code) return;
     try {
       await navigator.clipboard.writeText(promoCode.code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
     } catch {}
   };
 
@@ -89,6 +92,7 @@ export default function WinModal({ prize, promoCode, onClose }) {
                 >
                   Copiază 📋
                 </button>
+                {copied && <span className="win-modal__promo-tooltip">Copiat!</span>}
               </div>
             </div>
           )}
