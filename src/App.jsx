@@ -27,7 +27,6 @@ export default function App() {
   const [cooldownNoticeReady, setCooldownNoticeReady] = useState(false);
   const [reloadToken, setReloadToken] = useState(0);
   const loadingStickerSrc = import.meta.env?.VITE_LOADING_STICKER || "";
-  const cooldownStorageKey = "wheel_nextEligibleAt";
 
   const assets = useMemo(
     () => ({
@@ -72,27 +71,6 @@ export default function App() {
   }, [prizesLoading, cooldownActive, prizes.length, prizesError]);
 
   const handleRetry = () => setReloadToken((value) => value + 1);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(cooldownStorageKey);
-      if (!stored) return;
-      const ts = new Date(stored).getTime();
-      if (Number.isFinite(ts) && ts > Date.now()) {
-        setNextEligibleAt(stored);
-        setCooldownNoticeReady(true);
-      } else {
-        localStorage.removeItem(cooldownStorageKey);
-      }
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    try {
-      if (nextEligibleAt) localStorage.setItem(cooldownStorageKey, nextEligibleAt);
-      else localStorage.removeItem(cooldownStorageKey);
-    } catch {}
-  }, [nextEligibleAt]);
 
   useEffect(() => {
     let cancelled = false;
