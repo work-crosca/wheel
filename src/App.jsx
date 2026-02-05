@@ -219,10 +219,12 @@ export default function App() {
           const availabilityTask = async () => {
             if (!isTg) return;
             try {
+              initTelegramMiniApp();
               const initData = getInitData();
               const result = await fetchAvailability(initData);
               setNextEligibleAt(result?.nextEligibleAt || null);
               setCooldownNoticeReady(result?.eligible === false);
+              if (result?.eligible) setCooldownNoticeReady(false);
             } catch (err) {
               const code = err?.code || err?.message || "SERVER_ERROR";
               const channel = err?.channel;
@@ -238,11 +240,8 @@ export default function App() {
             }
           };
 
-          await Promise.all([
-            preloadAll(assets),
-            fetchHealth().catch(() => null),
-            availabilityTask().catch(() => null),
-          ]);
+          await availabilityTask().catch(() => null);
+          await Promise.all([preloadAll(assets), fetchHealth().catch(() => null)]);
         }}
         onDone={() => setReady(true)}
       />
