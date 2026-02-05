@@ -81,7 +81,7 @@ function drawWheel(ctx, prizes, size) {
   ctx.font = "800 14px system-ui, -apple-system, Segoe UI, Roboto";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("SPIN", cx, cy);
+  ctx.fillText("ÎNVÂRTE", cx, cy);
 }
 
 function getWinnerIndex(finalDeg, count) {
@@ -199,10 +199,10 @@ export default function PrizeWheel({
   isTelegram = true,
   onRequireTelegram,
   disabled = false,
-  spinLabel = "Spin",
-  spinningLabel = "Spinning...",
-  loadingLabel = "Loading...",
-  disabledLabel = "Unavailable",
+  spinLabel = "Învârte 🎯",
+  spinningLabel = "Se învârte… 🌀",
+  loadingLabel = "Se încarcă...",
+  disabledLabel = "Indisponibil",
 }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);

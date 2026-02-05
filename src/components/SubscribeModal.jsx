@@ -36,20 +36,20 @@ export default function SubscribeModal({ open, channel, onClose }) {
   return (
     <div className="win-modal" onClick={onClose}>
       <div className="win-modal__card" onClick={(e) => e.stopPropagation()}>
-        <div className="win-modal__title">Abonare necesara</div>
+        <div className="win-modal__title">Abonare necesară 📣</div>
 
         <div className="win-modal__prize">
           <div className="win-modal__label">
-            Trebuie sa fii abonat la {channel || "canal"}.
+            Trebuie să fii abonat la {channel || "canal"}.
           </div>
         </div>
 
         <button onClick={handleSubscribe} className="win-modal__button">
-          Aboneaza-te
+          Abonează-te ✅
         </button>
 
         <button onClick={onClose} className="win-modal__share">
-          Cancel
+          Închide
         </button>
       </div>
     </div>

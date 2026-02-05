@@ -52,7 +52,7 @@
   height: 12px;
   border-radius: 999px;
   background: var(--ios-blue);
-  box-shadow: 0 0 14px rgba(10, 132, 255, 0.45);
+  box-shadow: 0 0 14px rgba(163, 34, 230, 0.45);
 }
 
 .preloader__title {
@@ -98,8 +98,12 @@
   height: 100%;
   width: var(--progress);
   border-radius: 999px;
-  background: linear-gradient(90deg, #3ea0ff 0%, #0a84ff 100%);
-  box-shadow: 0 0 16px rgba(10, 132, 255, 0.35);
+  background: linear-gradient(
+    90deg,
+    rgba(163, 34, 230, 0.95) 0%,
+    rgba(163, 34, 230, 0.7) 100%
+  );
+  box-shadow: 0 0 16px rgba(163, 34, 230, 0.35);
   transition: width 120ms linear;
 }
 

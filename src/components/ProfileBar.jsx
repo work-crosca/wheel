@@ -46,8 +46,10 @@ export default function ProfileBar() {
   }, []);
 
   const fullName = useMemo(() => {
-    if (!user) return "Guest";
-    return [user.first_name, user.last_name].filter(Boolean).join(" ") || "User";
+    if (!user) return "Oaspete";
+    return (
+      [user.first_name, user.last_name].filter(Boolean).join(" ") || "Utilizator"
+    );
   }, [user]);
 
   const username = user?.username ? `@${user.username}` : null;

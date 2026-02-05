@@ -47,12 +47,12 @@ export default function App() {
     if (!cooldownActive) return null;
     const ts = new Date(nextEligibleAt);
     if (Number.isNaN(ts.getTime())) {
-      return { title: "Revino mai tarziu", detail: "Cooldown activ." };
+      return { title: "Revino mai târziu ⏳", detail: "Cooldown activ." };
     }
 
     return {
-      title: "Revino mai tarziu",
-      detail: "Poti incerca din nou la",
+      title: "Revino mai târziu ⏳",
+      detail: "Poți încerca din nou la",
       time: ts.toLocaleString("ro-RO", {
         dateStyle: "medium",
         timeStyle: "short",
@@ -64,8 +64,8 @@ export default function App() {
     prizesLoading || prizesError.length > 0 || prizes.length < 2 || cooldownActive;
 
   const disabledLabel = useMemo(() => {
-    if (prizesLoading) return "Se incarca...";
-    if (cooldownActive) return "Revino mai tarziu";
+    if (prizesLoading) return "Se încarcă...";
+    if (cooldownActive) return "Revino mai târziu ⏳";
     if (prizes.length < 2) return "Premii indisponibile";
     if (prizesError) return "Indisponibil";
     return "Indisponibil";
@@ -85,7 +85,7 @@ export default function App() {
       } catch {
         if (!cancelled) {
           setPrizes([]);
-          setPrizesError("Nu am putut incarca premiile.");
+          setPrizesError("Nu am putut încărca premiile.");
         }
       } finally {
         if (!cancelled) setPrizesLoading(false);
@@ -154,7 +154,7 @@ export default function App() {
 
       const prize = result?.prize || null;
       if (!prize) {
-        setSpinError("Raspuns invalid de la server.");
+        setSpinError("Răspuns invalid de la server.");
         return null;
       }
 
@@ -164,7 +164,7 @@ export default function App() {
       }
 
       if (index === -1) {
-        setSpinError("Premiul primit nu exista in roata.");
+        setSpinError("Premiul primit nu există în roată.");
         return null;
       }
 
@@ -177,9 +177,9 @@ export default function App() {
       if (code === "WEEKLY_LIMIT") setNextEligibleAt(nextDate);
 
       if (code === "UNAUTHORIZED") {
-        setSpinError("Autentificare Telegram invalida. Redeschide mini-app-ul.");
+        setSpinError("Autentificare Telegram invalidă. Redeschide mini-app-ul.");
       } else if (code === "MEMBERSHIP_CHECK_FAILED") {
-        setSpinError("Nu am putut verifica abonarea. Incearca din nou.");
+        setSpinError("Nu am putut verifica abonarea. Încearcă din nou.");
       } else if (code === "NOT_SUBSCRIBED") {
         setSpinChannel(channel || "");
         setShowSubscribe(true);
@@ -188,21 +188,21 @@ export default function App() {
           const ts = new Date(nextDate);
           if (!Number.isNaN(ts.getTime())) {
             setSpinError(
-              `Poti incerca din nou la ${ts.toLocaleString("ro-RO", {
+              `Poți încerca din nou la ${ts.toLocaleString("ro-RO", {
                 dateStyle: "medium",
                 timeStyle: "short",
               })}.`
             );
           } else {
-            setSpinError("Ai atins limita saptamanala.");
+            setSpinError("Ai atins limita săptămânală.");
           }
         } else {
-          setSpinError("Ai atins limita saptamanala.");
+          setSpinError("Ai atins limita săptămânală.");
         }
       } else if (code === "NO_PRIZES_CONFIGURED") {
         setSpinError("Nu sunt premii configurate.");
       } else {
-        setSpinError("Eroare server. Incearca mai tarziu.");
+        setSpinError("Eroare server. Încearcă mai târziu.");
       }
 
       return null;
@@ -212,8 +212,8 @@ export default function App() {
   if (!ready) {
     return (
       <Preloader
-        title="Prize Wheel"
-        subtitle="Încărcăm resursele…"
+        title="Roata Premiilor"
+        subtitle="Încărcăm resursele… ⏳"
         minDurationMs={0}
         animatedStickerSrc={loadingStickerSrc}
         run={async () => {
@@ -231,9 +231,9 @@ export default function App() {
               const channel = err?.channel;
 
               if (code === "UNAUTHORIZED") {
-                setSpinError("Autentificare Telegram invalida. Redeschide mini-app-ul.");
+                setSpinError("Autentificare Telegram invalidă. Redeschide mini-app-ul.");
               } else if (code === "MEMBERSHIP_CHECK_FAILED") {
-                setSpinError("Nu am putut verifica abonarea. Incearca din nou.");
+                setSpinError("Nu am putut verifica abonarea. Încearcă din nou.");
               } else if (code === "NOT_SUBSCRIBED") {
                 setSpinChannel(channel || "");
                 setShowSubscribe(true);
@@ -264,12 +264,12 @@ export default function App() {
                 prizesError || spinError ? " is-error" : ""
               }`}
             >
-              {prizesLoading && <div>Incarcam premiile...</div>}
+              {prizesLoading && <div>Încărcăm premiile…</div>}
               {!prizesLoading && prizesError && (
                 <div className="app__notice-row">
                   <span>{prizesError}</span>
                   <button type="button" onClick={handleRetry}>
-                    Reincearca
+                    Reîncearcă 🔁
                   </button>
                 </div>
               )}
@@ -295,7 +295,7 @@ export default function App() {
                 cooldownInfo && (
                   <div className="app__notice-cooldown">
                     <div className="app__notice-title">
-                      <span className="app__notice-badge">Cooldown</span>
+                      <span className="app__notice-badge">Pauză ⏳</span>
                       <span>{cooldownInfo.title}</span>
                     </div>
                     {cooldownInfo.time ? (
@@ -320,7 +320,7 @@ export default function App() {
             onRequireTelegram={() => setShowOpenInTelegram(true)}
             onSpinRequest={handleSpinRequest}
             disabled={spinDisabled}
-            loadingLabel="Se incarca..."
+            loadingLabel="Se încarcă..."
             disabledLabel={disabledLabel}
             onWin={({ prize, promoCode }) => {
               if (prize?.value === 0) {

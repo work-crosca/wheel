@@ -29,16 +29,16 @@ export default function OpenInTelegramModal({ open, onClose }) {
   return (
     <div className="open-tg-modal" onClick={onClose}>
       <div className="open-tg-modal__card" onClick={(e) => e.stopPropagation()}>
-        <div className="open-tg-modal__title">Deschide in Telegram</div>
+        <div className="open-tg-modal__title">Deschide în Telegram</div>
         <div className="open-tg-modal__text">
-          Trebuie sa deschizi aplicatia in Telegram ca sa poti invarti roata.
+          Trebuie să deschizi aplicația în Telegram ca să poți învârti roata.
         </div>
 
         <button type="button" onClick={handleOpen} className="open-tg-modal__button">
-          Deschide
+          Deschide 🚀
         </button>
         <button type="button" onClick={onClose} className="open-tg-modal__cancel">
-          Cancel
+          Închide
         </button>
       </div>
     </div>

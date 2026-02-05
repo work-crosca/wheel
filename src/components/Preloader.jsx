@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import "../styles/Preloader.css";
 
 const defaultSteps = [
-  { key: "ui", label: "Pregatim interfata..." },
-  { key: "assets", label: "Incarcam resursele..." },
+  { key: "ui", label: "Pregătim interfața..." },
+  { key: "assets", label: "Încărcăm resursele..." },
   { key: "ready", label: "Aproape gata..." },
 ];
 
@@ -16,13 +16,13 @@ function clamp(n, min, max) {
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Preloader({
-  title = "Se incarca...",
-  subtitle = "Doar o secunda",
+  title = "Se încarcă...",
+  subtitle = "Doar o secundă",
   steps = defaultSteps,
   minDurationMs = 0, // 0 = nu simulam timpul
   onDone, // callback cand e gata
   animatedStickerSrc = "",
-  animatedStickerAlt = "Loading sticker",
+  animatedStickerAlt = "Sticker de încărcare",
   // daca vrei sa folosesti loaderul pentru asteptat un async extern:
   run, // async () => void
 }) {
@@ -32,7 +32,7 @@ export default function Preloader({
   const [stickerFailed, setStickerFailed] = useState(false);
 
   const activeLabel = useMemo(() => {
-    return steps?.[activeStep]?.label ?? "Se incarca...";
+    return steps?.[activeStep]?.label ?? "Se încarcă...";
   }, [steps, activeStep]);
 
   const mediaType = useMemo(() => {

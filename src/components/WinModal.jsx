@@ -11,14 +11,14 @@ export default function WinModal({ prize, promoCode, onClose }) {
 
   const sharePrize = async () => {
     const label = prize?.label ?? "premiu";
-    const prizeText = `Am castigat ${label}! ðŸŽ‰`;
-    const ctaText = `ðŸŽ Incearca si tu: https://t.me/McellWheel_Bot`;
+    const prizeText = `Am câștigat ${label}! 🎉`;
+    const ctaText = `🎁 Încearcă și tu: https://t.me/McellWheel_Bot`;
 
     const message = `${prizeText}\n${ctaText}`;
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Prize Wheel", text: message });
+        await navigator.share({ title: "Roata Premiilor", text: message });
         return;
       } catch {
         // user cancelled or share failed
@@ -69,17 +69,17 @@ export default function WinModal({ prize, promoCode, onClose }) {
         />
       )}
       <div className="win-modal__card" onClick={(e) => e.stopPropagation()}>
-        <div className="win-modal__title">ðŸŽ‰ Felicitari!</div>
+        <div className="win-modal__title">🎉 Felicitări!</div>
 
         <div className="win-modal__prize">
           <div className="win-modal__label">
-            Ai castigat
+            Ai câștigat 🎁
             <br />
             premiu {prize.label}
           </div>
           {promoCode?.code && (
             <div className="win-modal__promo">
-              <div className="win-modal__promo-label">Promo code</div>
+              <div className="win-modal__promo-label">Cod promo</div>
               <div className="win-modal__promo-row">
                 <div className="win-modal__promo-code">{promoCode.code}</div>
                 <button
@@ -87,7 +87,7 @@ export default function WinModal({ prize, promoCode, onClose }) {
                   className="win-modal__promo-copy"
                   onClick={copyPromoCode}
                 >
-                  Copy
+                  Copiază 📋
                 </button>
               </div>
             </div>
@@ -99,7 +99,7 @@ export default function WinModal({ prize, promoCode, onClose }) {
         </button>
 
         <button onClick={sharePrize} className="win-modal__share">
-          Share
+          Distribuie 📣
         </button>
       </div>
     </div>
