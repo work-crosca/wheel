@@ -9,6 +9,7 @@ import SubscribeModal from "./components/SubscribeModal";
 import { preloadAll } from "./utils/preloadAssets";
 import { initTelegramMiniApp, getTg, getInitData, isTelegramMiniApp } from "./telegram";
 import { fetchAvailability, fetchHealth, fetchPrizes, spinWheel } from "./utils/api";
+import wheelSticker from "./assets/wheel.png";
 import "./styles/App.css";
 
 export default function App() {
@@ -27,7 +28,7 @@ export default function App() {
   const [nextEligibleAt, setNextEligibleAt] = useState(null);
   const [cooldownNoticeReady, setCooldownNoticeReady] = useState(false);
   const [reloadToken, setReloadToken] = useState(0);
-  const loadingStickerSrc = import.meta.env?.VITE_LOADING_STICKER || "";
+  const loadingStickerSrc = import.meta.env?.VITE_LOADING_STICKER || wheelSticker;
 
   const assets = useMemo(
     () => ({
