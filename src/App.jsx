@@ -81,7 +81,21 @@ export default function App() {
       setPrizesError("");
       try {
         const data = await fetchPrizes();
-        if (!cancelled) setPrizes(data);
+        const ordered = Array.isArray(data)
+          ? [...data].sort((a, b) => {
+              const aOrder = Number.isFinite(Number(a?.viewOrder))
+                ? Number(a.viewOrder)
+                : Number.POSITIVE_INFINITY;
+              const bOrder = Number.isFinite(Number(b?.viewOrder))
+                ? Number(b.viewOrder)
+                : Number.POSITIVE_INFINITY;
+              if (aOrder !== bOrder) return aOrder - bOrder;
+              const aDate = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const bDate = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+              return aDate - bDate;
+            })
+          : [];
+        if (!cancelled) setPrizes(ordered);
       } catch {
         if (!cancelled) {
           setPrizes([]);
