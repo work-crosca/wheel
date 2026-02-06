@@ -123,7 +123,7 @@ export default function Preloader({
   return (
     <div className="preloader" style={{ "--progress": `${progress}%` }}>
       <div className="preloader__card">
-        <div className="preloader__header">
+        <div className="preloader__logo">
           <div className="preloader__logo-bubble">
             {showSticker && mediaType === "video" ? (
               <video
@@ -148,10 +148,11 @@ export default function Preloader({
               <div className="preloader__logo-dot" />
             )}
           </div>
-          <div>
-            <div className="preloader__title">{title}</div>
-            <div className="preloader__subtitle">{subtitle}</div>
-          </div>
+        </div>
+
+        <div className="preloader__header">
+          <div className="preloader__title">{title}</div>
+          <div className="preloader__subtitle">{subtitle}</div>
         </div>
 
         <div className="preloader__status-row">

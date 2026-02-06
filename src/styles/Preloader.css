@@ -18,14 +18,21 @@
   color: var(--ios-label);
   display: grid;
   align-content: end;
-  gap: 16px;
+  gap: 18px;
   backdrop-filter: blur(18px);
 }
 
+.preloader__logo {
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+}
+
 .preloader__header {
-  display: flex;
-  gap: 14px;
-  align-items: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  text-align: center;
 }
 
 .preloader__logo-bubble {
