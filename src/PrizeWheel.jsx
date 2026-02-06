@@ -81,7 +81,7 @@ function drawWheel(ctx, prizes, size) {
   ctx.font = "800 14px system-ui, -apple-system, Segoe UI, Roboto";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("ÎNVÂRTE", cx, cy);
+  ctx.fillText("SPIN", cx, cy);
 }
 
 function getWinnerIndex(finalDeg, count) {
@@ -178,14 +178,7 @@ function createTickEngine() {
 }
 
 export default function PrizeWheel({
-  prizes = [
-    { label: "10 coins", value: 10, color: "#22C55E" },
-    { label: "Try again", value: 0, color: "#EF4444" },
-    { label: "50 coins", value: 50, color: "#3B82F6" },
-    { label: "1 ticket", value: 1, color: "#F59E0B" },
-    { label: "100 coins", value: 100, color: "#A855F7" },
-    { label: "Mystery", value: "mystery", color: "#06B6D4" },
-  ],
+  prizes = [],
   size = null,
   minTurns = 4,
   maxTurns = 7,

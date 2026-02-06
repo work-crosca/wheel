@@ -105,9 +105,9 @@
 
 .win-modal__promo-tooltip {
   position: absolute;
-  right: 12px;
+  left: 50%;
   top: -8px;
-  transform: translateY(-100%);
+  transform: translate(-50%, -100%);
   font-size: 12px;
   font-weight: 700;
   color: rgba(226, 220, 240, 0.85);
