@@ -85,14 +85,18 @@ export default function WinModal({ prize, promoCode, onClose }) {
               <div className="win-modal__promo-label">Cod promo</div>
               <div className="win-modal__promo-row">
                 <div className="win-modal__promo-code">{promoCode.code}</div>
-                <button
-                  type="button"
-                  className="win-modal__promo-copy"
-                  onClick={copyPromoCode}
-                >
-                  Copiază 📋
-                </button>
-                {copied && <span className="win-modal__promo-tooltip">Copiat!</span>}
+                <div className="win-modal__promo-copy-wrap">
+                  <button
+                    type="button"
+                    className="win-modal__promo-copy"
+                    onClick={copyPromoCode}
+                  >
+                    Copiază 📋
+                  </button>
+                  {copied && (
+                    <span className="win-modal__promo-tooltip">Copiat!</span>
+                  )}
+                </div>
               </div>
             </div>
           )}

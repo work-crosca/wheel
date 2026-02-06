@@ -61,8 +61,7 @@
 .win-modal__promo-row {
   display: grid;
   gap: 10px;
-  position: relative;
-  justify-items: start;
+  width: 100%;
 }
 
 .win-modal__promo-label {
@@ -82,8 +81,14 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   padding: 8px 12px;
+  width: 100%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
+}
+
+.win-modal__promo-copy-wrap {
+  position: relative;
+  width: 100%;
 }
 
 .win-modal__promo-copy {
@@ -95,12 +100,13 @@
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
+  width: 100%;
 }
 
 .win-modal__promo-tooltip {
   position: absolute;
-  right: 0;
-  top: -12px;
+  right: 12px;
+  top: -8px;
   transform: translateY(-100%);
   font-size: 12px;
   font-weight: 700;
